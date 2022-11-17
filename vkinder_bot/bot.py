@@ -1,24 +1,26 @@
 from random import randrange
 
+import configparser
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 
-token = input('Token: ')
+config = configparser.ConfigParser()
+config.read("config_bot.cfg")
+token = config["TOKEN"]["vk_token"]
 
 vk = vk_api.VkApi(token=token)
 longpoll = VkLongPoll(vk)
 
 
 def write_msg(user_id, message):
-    vk.method('messages.send', {'user_id': user_id, 'message': message,  'random_id': randrange(10 ** 7),})
+    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), })
 
 
 for event in longpoll.listen():
+    print(event.type)
     if event.type == VkEventType.MESSAGE_NEW:
-
         if event.to_me:
             request = event.text
-
             if request == "привет":
                 write_msg(event.user_id, f"Хай, {event.user_id}")
             elif request == "пока":
