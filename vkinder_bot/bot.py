@@ -18,12 +18,11 @@ def write_msg(user_id, message):
 
 for event in longpoll.listen():
     print(event.type)
-    if event.type == VkEventType.MESSAGE_NEW:
-        if event.to_me:
-            request = event.text
-            if request == "привет":
-                write_msg(event.user_id, f"Хай, {event.user_id}")
-            elif request == "пока":
-                write_msg(event.user_id, "Пока((")
-            else:
-                write_msg(event.user_id, "Не поняла вашего ответа...")
+    if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+        request = event.text
+        if request == "привет":
+            write_msg(event.user_id, f"Хай, {event.user_id}")
+        elif request == "пока":
+            write_msg(event.user_id, "Пока((")
+        else:
+            write_msg(event.user_id, "Не поняла вашего ответа...")
