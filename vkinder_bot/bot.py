@@ -8,23 +8,23 @@ config = configparser.ConfigParser()
 config.read("config_bot.cfg")
 token = config["TOKEN"]["vk_token"]
 
-vk = vk_api.VkApi(token=token)
-longpoll = VkLongPoll(vk)
 
+def run_bot():
+    vk = vk_api.VkApi(token=token)
+    longpoll = VkLongPoll(vk)
 
-# TODO: добавить запрос разрешения отправки сообщений!
+    # TODO: добавить запрос разрешения отправки сообщений!
 
-def write_msg(user_id, message):
-    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), })
+    def write_msg(user_id, message):
+        vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), })
 
-
-for event in longpoll.listen():
-    print(event.type)
-    if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-        request = event.text
-        if request == "привет":
-            write_msg(event.user_id, f"Хай, {event.user_id}")
-        elif request == "пока":
-            write_msg(event.user_id, "Пока((")
-        else:
-            write_msg(event.user_id, "Не поняла вашего ответа...")
+    for event in longpoll.listen():
+        print(event.type)
+        if event.type == VkEventType.MESSAGE_NEW and event.to_me:
+            request = event.text
+            if request == "привет":
+                write_msg(event.user_id, f"Хай, {event.user_id}")
+            elif request == "пока":
+                write_msg(event.user_id, "Пока((")
+            else:
+                write_msg(event.user_id, "Не поняла вашего ответа...")
