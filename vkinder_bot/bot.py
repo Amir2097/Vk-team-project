@@ -1,16 +1,13 @@
 from random import randrange
-
 import configparser
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 
-config = configparser.ConfigParser()
-config.read("config_bot.cfg")
-token = config["TOKEN"]["vk_token"]
-
 
 def run_bot():
-    vk = vk_api.VkApi(token=token)
+    config = configparser.ConfigParser()
+    config.read("config_bot.cfg")
+    vk = vk_api.VkApi(token=config["TOKEN"]["vk_token"])
     longpoll = VkLongPoll(vk)
 
     # TODO: добавить запрос разрешения отправки сообщений!
