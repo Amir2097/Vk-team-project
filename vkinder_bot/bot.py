@@ -12,6 +12,8 @@ vk = vk_api.VkApi(token=token)
 longpoll = VkLongPoll(vk)
 
 
+# TODO: добавить запрос разрешения отправки сообщений!
+
 def write_msg(user_id, message):
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), })
 
