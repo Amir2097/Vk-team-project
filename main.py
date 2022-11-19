@@ -1,7 +1,6 @@
 import os
 import configparser
-
-import vkinder_bot.bot as vkinder
+from vkinder_bot.bot import run_bot
 
 config = configparser.ConfigParser()
 configpath = "config_bot.cfg"
@@ -10,7 +9,7 @@ configpath = "config_bot.cfg"
 def startup():
     """Функция запуска и первоначальной настройки программы"""
     if os.path.exists(configpath):
-        vkinder.run_bot()
+        run_bot()
         return "[INFO]  Bot launched"
     else:
         config.add_section("TOKEN")
@@ -22,7 +21,7 @@ def startup():
 
         # TODO Далее здесь прописать настройку и создание базы данных и другие необходимые настройки
 
-        vkinder.run_bot()
+        run_bot()
         return "[INFO]  Bot set up and running"
 
 

@@ -3,13 +3,13 @@ import configparser
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 
+config = configparser.ConfigParser()
+config.read("config_bot.cfg")
+vk = vk_api.VkApi(token=config["TOKEN"]["vk_token"])
+longpoll = VkLongPoll(vk)
+
 
 def run_bot():
-    config = configparser.ConfigParser()
-    config.read("config_bot.cfg")
-    vk = vk_api.VkApi(token=config["TOKEN"]["vk_token"])
-    longpoll = VkLongPoll(vk)
-
     # TODO: добавить запрос разрешения отправки сообщений!
 
     def write_msg(user_id, message):
@@ -17,6 +17,7 @@ def run_bot():
 
     for event in longpoll.listen():
         print(event.type)
+
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             request = event.text
             if request == "привет":
