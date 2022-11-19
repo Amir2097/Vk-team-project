@@ -1,6 +1,7 @@
 import os
 import configparser
 from vkinder_bot.bot import run_bot
+from vkinder_bot.extraction_data import ExtractingUserData
 
 config = configparser.ConfigParser()
 configpath = "config_bot.cfg"
@@ -26,4 +27,7 @@ def startup():
 
 
 if __name__ == '__main__':
-    startup()
+    # startup()
+    ext = ExtractingUserData("stirel")
+    print(ext.primary_user_data())
+

@@ -1,7 +1,5 @@
-""" Модуль поиска и сбора информации о пользователе """
-
-import vk_api
 import configparser
+import requests
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
@@ -9,16 +7,21 @@ config.read("config_bot.cfg")
 
 class ExtractingUserData:
     def __init__(self, user_id):
+        self.paramitres = None
+        self.token = config["TOKEN"]["vk_token"]
         self.user_id = user_id
-        self.vk = vk_api.VkApi(token=config["TOKEN"]["vk_token"])
 
-    def extract_data(self):
-        return self.user_id
+    def primary_user_data(self):
+        """
+        ____________________primary_user_data_____________________
+        Метод получения первичной информации о пользователе.
+        Данные выводятся в json формате. Подробнее про результат
+        вывода можно прочитать https://dev.vk.com/method/users.get
+        """
 
-    def extract_photo(self):
-        return self.user_id
+        self.paramitres = {'access_token': self.token, 'user_id': self.user_id, 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
+        return request_generation.json()
 
+    print(primary_user_data.__doc__)
 
-if __name__ == '__main__':
-    ext = ExtractingUserData("1")
-    ext.extract_data()
