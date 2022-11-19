@@ -14,8 +14,10 @@ def startup():
         return "[INFO]  Bot launched"
     else:
         config.add_section("TOKEN")
-        add_token = input("[SET]Введите токен - ")
+        add_token = input("[SET]Введите токен сообщества - ")
         config.set("TOKEN", "vk_token", add_token)
+        add_user_token = input("[SET]Введите токен служебной страницы (https://vkhost.github.io/) - ")
+        config.set("TOKEN", "vk_user_token", add_user_token)
 
         with open(configpath, "w") as config_file:
             config.write(config_file)
@@ -28,6 +30,5 @@ def startup():
 
 if __name__ == '__main__':
     # startup()
-    ext = ExtractingUserData("stirel")
-    print(ext.primary_user_data())
-
+    ext = ExtractingUserData(100, 18, 29, 1, 1, 100)
+    print(ext.user_search())

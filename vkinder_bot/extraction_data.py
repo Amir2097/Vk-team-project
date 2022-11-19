@@ -6,22 +6,19 @@ config.read("config_bot.cfg")
 
 
 class ExtractingUserData:
-    def __init__(self, user_id):
+    def __init__(self, count, age_from, age_to, sex, city, country):
         self.paramitres = None
-        self.token = config["TOKEN"]["vk_token"]
-        self.user_id = user_id
+        self.token = config["TOKEN"]["vk_user_token"]
+        self.count = count
+        self.age_from = age_from
+        self.age_to = age_to
+        self.sex = sex
+        self.city = city
+        self.country = country
 
-    def primary_user_data(self):
-        """
-        ____________________primary_user_data_____________________
-        Метод получения первичной информации о пользователе.
-        Данные выводятся в json формате. Подробнее про результат
-        вывода можно прочитать https://dev.vk.com/method/users.get
-        """
-
-        self.paramitres = {'access_token': self.token, 'user_id': self.user_id, 'v': 5.131}
-        request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
+    def user_search(self):
+        self.paramitres = {'access_token': self.token, 'count': self.count, 'has_photo': 1, 'age_from': self.age_from,
+                           'age_to': self.age_to, 'fields': 'photo_200_orig, relation: 6', 'sex': self.sex,
+                           'city': self.city, 'country': self.country, 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/users.search', params=self.paramitres)
         return request_generation.json()
-
-    print(primary_user_data.__doc__)
-
