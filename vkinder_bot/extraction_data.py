@@ -1,8 +1,5 @@
 import configparser
-from pprint import pprint
-
 import requests
-import json
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
@@ -11,7 +8,6 @@ config.read("config_bot.cfg")
 class ExtractingUserData:
     def __init__(self):
         self.dict_photo_and_like = None
-        self.counter = None
         self.user_id = None
         self.country = None
         self.sex = None
@@ -24,7 +20,7 @@ class ExtractingUserData:
 
     def user_search(self, count, age_from, age_to, sex, city, country):
         """
-        Метод поиска, получает на вход параметры:
+        Метод поиска пользователей сайта VK по заданным параметрам, получает на вход параметры:
 
         count - количество найденых записей (не более 999)
         age_from - от какого возраста искать
@@ -50,16 +46,20 @@ class ExtractingUserData:
         return request_generation.json()['response']['items']
 
     def photo_extraction(self, user_id):
+        """
+        Метод получения 3 фотографий пофиля которые имеют наибольшие LIKE, получает на вход параметры:
+
+        user_id - id пользователя
+
+        :return:
+        """
         self.user_id = user_id
-        self.dict_photo_and_like = []
-        self.counter = 0
+        self.dict_photo_and_like = {}
         self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile', 'extended': 1,
                            'photo_sizes': 0, 'v': 5.131}
         request_generation = requests.get(url=f'https://api.vk.com/method/photos.get', params=self.paramitres)
 
         for reqer in request_generation.json()['response']['items']:
-            list_formation = {(reqer['sizes'][3]['url']):reqer['likes']['count']}
-            self.dict_photo_and_like.append(list_formation)
-            pprint(self.dict_photo_and_like)
+            self.dict_photo_and_like[(reqer['sizes'][3]['url'])] = reqer['likes']['count']
 
-        return None
+        return sorted(self.dict_photo_and_like, key=self.dict_photo_and_like.get)[-3:]
