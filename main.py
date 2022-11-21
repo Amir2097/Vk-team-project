@@ -19,6 +19,13 @@ def startup():
         add_user_token = input("[SET]Введите токен служебной страницы (https://vkhost.github.io/) - ")
         config.set("TOKEN", "vk_user_token", add_user_token)
 
+        user_data = input("[SET] Введите имя пользователя базы данных")
+        config.set("DATABASE", "db_user", user_data)
+        password_data = input("[SET] Введите пароль пользователя базы данных")
+        config.set("DATABASE", "db_password", password_data)
+        host_data = input("[SET] Введите хост базы данных")
+        config.set("DATABASE", "db_host", host_data)
+
         with open(configpath, "w") as config_file:
             config.write(config_file)
 
