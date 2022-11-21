@@ -30,5 +30,6 @@ def startup():
 
 if __name__ == '__main__':
     # startup()
-    ext = ExtractingUserData(100, 18, 29, 1, 1, 100)
-    print(ext.user_search())
+    ext = ExtractingUserData()
+    # print(ext.user_search(100, 18, 29, 0, 1, 100))
+    print((ext.photo_extraction(127862738)))

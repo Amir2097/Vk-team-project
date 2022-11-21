@@ -1,24 +1,30 @@
 import configparser
+from pprint import pprint
+
 import requests
+import json
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
 
 
 class ExtractingUserData:
-    def __init__(self, count, age_from, age_to, sex, city, country):
+    def __init__(self):
+        self.dict_photo_and_like = None
+        self.counter = None
+        self.user_id = None
+        self.country = None
+        self.sex = None
+        self.city = None
+        self.age_to = None
+        self.age_from = None
+        self.count = None
         self.paramitres = None
         self.token = config["TOKEN"]["vk_user_token"]
-        self.count = count
-        self.age_from = age_from
-        self.age_to = age_to
-        self.sex = sex
-        self.city = city
-        self.country = country
 
-    def user_search(self):
+    def user_search(self, count, age_from, age_to, sex, city, country):
         """
-        Метод поиска, берет на вход параметры:
+        Метод поиска, получает на вход параметры:
 
         count - количество найденых записей (не более 999)
         age_from - от какого возраста искать
@@ -30,9 +36,30 @@ class ExtractingUserData:
         Поиск ведется ТОЛЬКО по страницам пользователей у которых установлен смейный статус "В активном поиске"
         :return:
         """
+        self.count = count
+        self.age_from = age_from
+        self.age_to = age_to
+        self.sex = sex
+        self.city = city
+        self.country = country
 
         self.paramitres = {'access_token': self.token, 'count': self.count, 'has_photo': 1, 'age_from': self.age_from,
                            'age_to': self.age_to, 'fields': 'photo_200_orig, relation: 6', 'sex': self.sex,
                            'city': self.city, 'country': self.country, 'v': 5.131}
         request_generation = requests.get(url=f'https://api.vk.com/method/users.search', params=self.paramitres)
         return request_generation.json()['response']['items']
+
+    def photo_extraction(self, user_id):
+        self.user_id = user_id
+        self.dict_photo_and_like = []
+        self.counter = 0
+        self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile', 'extended': 1,
+                           'photo_sizes': 0, 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/photos.get', params=self.paramitres)
+
+        for reqer in request_generation.json()['response']['items']:
+            list_formation = {(reqer['sizes'][3]['url']):reqer['likes']['count']}
+            self.dict_photo_and_like.append(list_formation)
+            pprint(self.dict_photo_and_like)
+
+        return None
