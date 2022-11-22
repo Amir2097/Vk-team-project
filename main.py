@@ -10,7 +10,6 @@ def startup():
     if os.path.exists(configpath):
         from vkinder_bot.bot import run_bot
         run_bot()
-        return "[INFO]  Bot launched"
     else:
         config.add_section("TOKEN")
         add_token = input("[SET]Введите токен сообщества - ")
