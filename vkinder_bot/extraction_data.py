@@ -53,16 +53,19 @@ class ExtractingUserData:
         user_id - id пользователя
 
         """
-        self.user_id = user_id
-        self.dict_photo_and_like = {}
-        self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile', 'extended': 1,
-                           'photo_sizes': 0, 'v': 5.131}
-        request_generation = requests.get(url=f'https://api.vk.com/method/photos.get', params=self.paramitres)
+        try:
+            self.user_id = user_id
+            self.dict_photo_and_like = {}
+            self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile', 'extended': 1,
+                               'photo_sizes': 0, 'v': 5.131}
+            request_generation = requests.get(url=f'https://api.vk.com/method/photos.get', params=self.paramitres)
 
-        for reqer in request_generation.json()['response']['items']:
-            self.dict_photo_and_like[(reqer['sizes'][3]['url'])] = reqer['likes']['count']
+            for reqer in request_generation.json()['response']['items']:
+                self.dict_photo_and_like[(reqer['sizes'][3]['url'])] = reqer['likes']['count']
 
-        return sorted(self.dict_photo_and_like, key=self.dict_photo_and_like.get)[-3:]
+            return sorted(self.dict_photo_and_like, key=self.dict_photo_and_like.get)[-3:]
+        except KeyError:
+            return "Страница пользователя закрыта настройками приватности!"
 
     def extract_city_and_country(self, user_id):
 
@@ -74,14 +77,15 @@ class ExtractingUserData:
         на выходе будет список формата [идентификатор_страны, идентификатор_города]
 
         """
-
-        self.user_id = user_id
-        self.dict_city_and_country = []
-        self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country', 'v': 5.131}
-        request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
-        for reqer in request_generation.json()['response']:
-            self.dict_city_and_country.append(reqer['country']['id'])
-            self.dict_city_and_country.append(reqer['city']['id'])
-
-        return self.dict_city_and_country
+        try:
+            self.user_id = user_id
+            self.dict_city_and_country = []
+            self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country', 'v': 5.131}
+            request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
+            for reqer in request_generation.json()['response']:
+                self.dict_city_and_country.append(reqer['country']['id'])
+                self.dict_city_and_country.append(reqer['city']['id'])
+            return self.dict_city_and_country
+        except KeyError:
+            return "Страница пользователя закрыта настройками приватности!"
 

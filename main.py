@@ -1,7 +1,5 @@
 import os
 import configparser
-from vkinder_bot.bot import run_bot
-from vkinder_bot.extraction_data import ExtractingUserData
 
 config = configparser.ConfigParser()
 configpath = "config_bot.cfg"
@@ -10,6 +8,7 @@ configpath = "config_bot.cfg"
 def startup():
     """Функция запуска и первоначальной настройки программы"""
     if os.path.exists(configpath):
+        from vkinder_bot.bot import run_bot
         run_bot()
         return "[INFO]  Bot launched"
     else:
@@ -19,24 +18,17 @@ def startup():
         add_user_token = input("[SET]Введите токен служебной страницы (https://vkhost.github.io/) - ")
         config.set("TOKEN", "vk_user_token", add_user_token)
 
-        user_data = input("[SET] Введите имя пользователя базы данных")
+        config.add_section("DATABASE")
+        user_data = input("[SET] Введите имя пользователя базы данных - ")
         config.set("DATABASE", "db_user", user_data)
-        password_data = input("[SET] Введите пароль пользователя базы данных")
+        password_data = input("[SET] Введите пароль пользователя базы данных - ")
         config.set("DATABASE", "db_password", password_data)
-        host_data = input("[SET] Введите хост базы данных")
+        host_data = input("[SET] Введите хост базы данных - ")
         config.set("DATABASE", "db_host", host_data)
 
         with open(configpath, "w") as config_file:
             config.write(config_file)
 
 
-        run_bot()
-        return "[INFO]  Bot set up and running"
-
-
 if __name__ == '__main__':
-    # startup()
-    ext = ExtractingUserData()
-    print((ext.extract_city_and_country(127862738)))
-
-
+    startup()
