@@ -7,6 +7,7 @@ config.read("config_bot.cfg")
 
 class ExtractingUserData:
     def __init__(self):
+        self.dict_city_and_country = None
         self.dict_photo_and_like = None
         self.user_id = None
         self.country = None
@@ -62,3 +63,25 @@ class ExtractingUserData:
             self.dict_photo_and_like[(reqer['sizes'][3]['url'])] = reqer['likes']['count']
 
         return sorted(self.dict_photo_and_like, key=self.dict_photo_and_like.get)[-3:]
+
+    def extract_city_and_country(self, user_id):
+
+        """
+        Метод для получения идентификатора страны и города пользователя, получает на вход параметры:
+
+        user_id - id пользователя
+
+        на выходе будет список формата [идентификатор_страны, идентификатор_города]
+
+        """
+
+        self.user_id = user_id
+        self.dict_city_and_country = []
+        self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country', 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
+        for reqer in request_generation.json()['response']:
+            self.dict_city_and_country.append(reqer['country']['id'])
+            self.dict_city_and_country.append(reqer['city']['id'])
+
+        return self.dict_city_and_country
+

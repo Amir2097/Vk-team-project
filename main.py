@@ -35,4 +35,8 @@ def startup():
 
 
 if __name__ == '__main__':
-    startup()
+    # startup()
+    ext = ExtractingUserData()
+    print((ext.extract_city_and_country(127862738)))
+
+
