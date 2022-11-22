@@ -7,5 +7,6 @@ venv
 Thumbs.db
 .DS_Store
 .idea/workspace.xml
+*.json
 
 
