@@ -29,14 +29,10 @@ def startup():
         with open(configpath, "w") as config_file:
             config.write(config_file)
 
-        # TODO Далее здесь прописать настройку и создание базы данных и другие необходимые настройки
 
         run_bot()
         return "[INFO]  Bot set up and running"
 
 
 if __name__ == '__main__':
-    # startup()
-    ext = ExtractingUserData()
-    # print(ext.user_search(100, 18, 29, 0, 1, 100))
-    print((ext.photo_extraction(127862738)))
+    startup()

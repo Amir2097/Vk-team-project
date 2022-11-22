@@ -30,7 +30,7 @@ class ExtractingUserData:
         country - идентификатор страны (берется у пользователя который ведет диалог с ботом)
 
         Поиск ведется ТОЛЬКО по страницам пользователей у которых установлен смейный статус "В активном поиске"
-        :return:
+
         """
         self.count = count
         self.age_from = age_from
@@ -51,7 +51,6 @@ class ExtractingUserData:
 
         user_id - id пользователя
 
-        :return:
         """
         self.user_id = user_id
         self.dict_photo_and_like = {}
