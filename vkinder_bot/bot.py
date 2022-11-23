@@ -66,6 +66,8 @@ age_from_list = []
 age_to_list = []
 '''Критерий поиска до максимального возраста (+3)'''
 
+age = []
+
 
 age_user = {}
 '''Словарь для возраста пользователя'''
@@ -87,7 +89,6 @@ def run_bot():
         vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), 'keyboard': keyboard})
 
     for event in longpoll.listen():
-        print(event.type)
 
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             request = event.text.lower()
@@ -130,6 +131,7 @@ def run_bot():
                     '''Выведение списка избранных пользователей'''
                     write_msg(event.user_id, f"Ваш список избранных:", start_keyboard)
 
+
                 if request == "чс":
                     '''Выведение списка ЧС пользователей'''
                     write_msg(event.user_id, f"Ваш список ЧС:", start_keyboard)
@@ -142,7 +144,11 @@ def run_bot():
                     user_sex_list.append(2)
                     write_msg(event.user_id, f"{event.user_id} Напишите возраст:")
                 '''Добавление возраста в словарь под ключом: age'''
-                age_user['age'] = request
+
+                # age.append(request)
+                # print(age[-1])
+
+                # age_user['age'] = request
 
                 if request == "девушка":
                     '''Если девушка, то в список добавляется 1'''
