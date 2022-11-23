@@ -52,12 +52,14 @@ class ExtractingUserData:
 
         user_id - id пользователя
 
+        На выходе бедет
+
         """
         try:
             self.user_id = user_id
             self.dict_photo_and_like = {}
-            self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile', 'extended': 1,
-                               'photo_sizes': 0, 'v': 5.131}
+            self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile',
+                               'extended': 1, 'photo_sizes': 0, 'v': 5.131}
             request_generation = requests.get(url=f'https://api.vk.com/method/photos.get', params=self.paramitres)
 
             for reqer in request_generation.json()['response']['items']:
@@ -80,7 +82,8 @@ class ExtractingUserData:
         try:
             self.user_id = user_id
             self.dict_city_and_country = []
-            self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country', 'v': 5.131}
+            self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country',
+                               'v': 5.131}
             request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
             for reqer in request_generation.json()['response']:
                 self.dict_city_and_country.append(reqer['country']['id'])
@@ -89,3 +92,7 @@ class ExtractingUserData:
         except KeyError:
             return "Страница пользователя закрыта настройками приватности!"
 
+
+if __name__ == '__main__':
+    ex = ExtractingUserData()
+    ex.photo_extraction('127862738')
