@@ -112,7 +112,7 @@ def run_bot():
             if request == "назад":
                 '''Переход в основное, стартовое меню'''
                 write_msg(event.user_id, f"{event.user_id} вы перешли назад", start_keyboard)
-
+                user_mode = 'start'
 
             if user_mode == 'start':
 
@@ -136,6 +136,10 @@ def run_bot():
                     '''Выведение списка ЧС пользователей'''
                     write_msg(event.user_id, f"Ваш список ЧС:", start_keyboard)
 
+                if request == "создатели":
+                    '''Выведение создателей (лучших в своем деле) данного бота'''
+                    write_msg(event.user_id, f"Создатели бота хотят быть неуязвимы и остаются в тени 62 группы..", start_keyboard)
+
 
             if user_mode == 'info_search_people':
 
@@ -156,6 +160,7 @@ def run_bot():
                     write_msg(event.user_id, f"{event.user_id} Напишите возраст:")
                 '''Добавление возраста в словарь под ключом: age'''
                 age_user['age'] = request
+
 
             if user_mode == 'search_people':
 
@@ -187,4 +192,5 @@ def run_bot():
                     write_msg(event.user_id, "Пользователь добавлен в избранное")
                     # TODO: Здесь абсолютно таже схема, что и с ЧС, только список избранных
                     # TODO: like_me_list.append(search_users_id???)
+
 
