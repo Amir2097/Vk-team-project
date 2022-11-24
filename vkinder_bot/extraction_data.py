@@ -1,4 +1,6 @@
 import configparser
+from pprint import pprint
+
 import requests
 
 config = configparser.ConfigParser()
@@ -7,6 +9,7 @@ config.read("config_bot.cfg")
 
 class ExtractingUserData:
     def __init__(self):
+        self.list_photo_extraction_with_marks = None
         self.dict_city_and_country = None
         self.dict_photo_and_like = None
         self.user_id = None
@@ -92,7 +95,29 @@ class ExtractingUserData:
         except KeyError:
             return "Страница пользователя закрыта настройками приватности!"
 
+    def photo_extraction_with_marks(self, user_id):
+
+        """
+        Метод для получения списка фотографий где отмечен пользователь, получает на вход параметры:
+
+        user_id - id пользователя
+
+        МЕТОД ВЫВОДИТ 5 ФОТОГРАФИЙ!!!!
+        """
+        try:
+            self.user_id = user_id
+            self.list_photo_extraction_with_marks = []
+            self.paramitres = {'access_token': self.token, 'user_id': self.user_id, 'count': 5, 'v': 5.131}
+            request_generation = requests.get(url=f'https://api.vk.com/method/photos.getUserPhotos',
+                                              params=self.paramitres)
+            for reqer in request_generation.json()['response']['items']:
+                self.list_photo_extraction_with_marks.append(reqer['sizes'][4]['url'])
+
+            return self.list_photo_extraction_with_marks
+        except KeyError:
+            return "Страница пользователя закрыта настройками приватности!"
+
 
 if __name__ == '__main__':
     ex = ExtractingUserData()
-    ex.photo_extraction('127862738')
+    pprint(ex.photo_extraction_with_marks('127862738'))
