@@ -138,7 +138,7 @@ def run_bot():
                 if len(request) == 2:
                     age_from = int(request) - 3
                     age_to = int(request) + 3
-                # TODO age_to возраст(-3) и age_for(+3), к ним добавить методы для поиска
+                # TODO age_from возраст(-3) и age_to(+3), к ним добавить методы для поиска
 
 
                 if request == "девушка":
