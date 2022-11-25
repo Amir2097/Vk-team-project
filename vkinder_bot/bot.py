@@ -5,7 +5,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 
 
 config = configparser.ConfigParser()
-config.read("config_bot.cfg")
+config.read("vkinder_bot/config_bot.cfg")
 vk = vk_api.VkApi(token=config["TOKEN"]["vk_token"])
 longpoll = VkLongPoll(vk)
 

@@ -2,7 +2,7 @@ import os
 import configparser
 
 config = configparser.ConfigParser()
-configpath = "config_bot.cfg"
+configpath = "vkinder_bot/config_bot.cfg"
 
 
 def startup():
