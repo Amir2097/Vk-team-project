@@ -7,6 +7,14 @@ config = configparser.ConfigParser()
 config.read("config_bot.cfg")
 
 
+class Auth:
+    def __init__(self):
+        self.user_id = None
+
+    def authorization_request(self, user_id):
+        self.user_id = user_id
+
+
 class ExtractingUserData:
     def __init__(self):
         self.list_photo_extraction_with_marks = None
