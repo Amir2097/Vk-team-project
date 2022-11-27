@@ -7,11 +7,13 @@ import requests
 # from sqlalchemy.orm import declarative_base, relationship
 # from Database.models import User, Favorite, Blocked, Photo, Founduser,
 
+from extraction_data import ExtractingUserData
 
 config = configparser.ConfigParser()
-config.read("vkinder_bot/config_bot.cfg")
+config.read("config_bot.cfg")
 vk = vk_api.VkApi(token=config["TOKEN"]["vk_token"])
 longpoll = VkLongPoll(vk)
+extr_name = ExtractingUserData()
 
 
 def get_keyboard(buts):
@@ -29,7 +31,8 @@ def get_keyboard(buts):
         for k in range(len(buts[i])):
             text = buts[i][k][0]
             color = {"зеленый": "positive", "красный": "negative", "синий": "primary"}[buts[i][k][1]]
-            nb[i][k] = {"action": {"type": "text", "payload": "{\"button\": \"" + "1" + "\"}", "label": f"{text}"}, "color": f"{color}"}
+            nb[i][k] = {"action": {"type": "text", "payload": "{\"button\": \"" + "1" + "\"}", "label": f"{text}"},
+                        "color": f"{color}"}
     first_keyboard = {"one_time": False, "buttons": nb}
     first_keyboard = json.dumps(first_keyboard, ensure_ascii=False).encode("utf-8")
     first_keyboard = str(first_keyboard.decode("utf-8"))
@@ -61,20 +64,19 @@ def run_bot():
     # TODO: добавить запрос разрешения отправки сообщений!
 
     def write_msg(user_id, message, keyboard=None):
-        vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), 'keyboard': keyboard})
+        vk.method('messages.send',
+                  {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), 'keyboard': keyboard})
 
     for event in longpoll.listen():
-
+        # print(event.type)
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             request = event.text.lower()
 
-
-            if request == "начать" or request == "привет":
-                #TODO: Запрос на получение токена
-                link_user = 'https://oauth.vk.com/authorize?client_id=6441755&display=page&redirect_uri=https://vk.com/im?sel=-217240550&scope=notify,photos,messages,offline&response_type=code&v=5.131'
-                write_msg(event.user_id, link_user)
+            if request == "начать" or request == "привет" or request == "1":
+                namees = extr_name.extract_name(event.user_id)
+                # TODO: Запрос на получение токена
                 '''Стартовое, основное меню для пользователя'''
-                write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
+                write_msg(event.user_id, f"{namees} привет! Прошу ознакомиться с меню:", start_keyboard)
                 user_mode = 'start'
 
             if request == "критерии для поиска":
@@ -97,30 +99,28 @@ def run_bot():
                 if request == "что умеет делать бот":
                     '''Описание функциоанала бота'''
                     write_msg(event.user_id, "Бот способен на многое!\n Главная его функция, это сближать людей!\n"
-                                                 "Ничего сложного нету, полагайтесь на кнопки в меню чата!\n"
-                                                 "Поиск людей производится по 3-ем критериям:\n"
-                                                 "1 - Пол\n"
-                                                 "2 - Возраст (+- 3 года диапазон поиска по возрасту)\n"
-                                                 "3 - Город\n"
-                                                 "Также вы можете добавить людей в Избранное и список ЧС!\n"
-                                                 "Удачного пользования, надеемся мы вам поможем &#128107;", start_keyboard)
+                                             "Ничего сложного нету, полагайтесь на кнопки в меню чата!\n"
+                                             "Поиск людей производится по 3-ем критериям:\n"
+                                             "1 - Пол\n"
+                                             "2 - Возраст (+- 3 года диапазон поиска по возрасту)\n"
+                                             "3 - Город\n"
+                                             "Также вы можете добавить людей в Избранное и список ЧС!\n"
+                                             "Удачного пользования, надеемся мы вам поможем &#128107;", start_keyboard)
 
                 if request == "избранные":
                     '''Выведение списка избранных пользователей'''
                     write_msg(event.user_id, f"Ваш список избранных:", start_keyboard)
                     # TODO обращение к базе
 
-
                 if request == "черный список":
                     '''Выведение списка ЧС пользователей'''
                     write_msg(event.user_id, f"Ваш список ЧС:", start_keyboard)
                     # TODO обращение к базе
 
-
                 if request == "создатели":
                     '''Выведение создателей (лучших в своем деле) данного бота'''
-                    write_msg(event.user_id, f"Создатели бота хотят быть неуязвимы и остаются в тени 62 группы..", start_keyboard)
-
+                    write_msg(event.user_id, f"Создатели бота хотят быть неуязвимы и остаются в тени 62 группы..",
+                              start_keyboard)
 
             if user_mode == 'info_search_people':
 
@@ -129,7 +129,6 @@ def run_bot():
                     user_sex = 2
                     write_msg(event.user_id, f"{event.user_id} Напишите возраст:")
                 '''Добавление возраста в словарь под ключом: age'''
-
 
                 if request == "девушка":
                     '''Если девушка, то в список добавляется 1'''
@@ -141,7 +140,6 @@ def run_bot():
                     age_from = int(request) - 3
                     age_to = int(request) + 3
                     # TODO age_from возраст(-3) и age_to(+3), к ним добавить методы для поиска
-
 
             if user_mode == 'search_people':
 
@@ -174,3 +172,6 @@ def run_bot():
                     write_msg(event.user_id, "Пользователь добавлен в избранное")
                     # TODO: Здесь абсолютно таже схема, что и с ЧС, только список избранных
                     # TODO: like_me_list.append(search_users_id???)
+
+
+run_bot()

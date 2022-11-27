@@ -11,8 +11,9 @@ class Auth:
     def __init__(self):
         self.user_id = None
 
-    def authorization_request(self, user_id):
-        self.user_id = user_id
+    def authorization_request(self):
+        link_user = 'https://oauth.vk.com/authorize?client_id=6441755&display=page&redirect_uri=https://vk.com' \
+                    '/app6441755&scope=notify,photos,messages,offline&response_type=code&v=5.131 '
 
 
 class ExtractingUserData:
@@ -29,6 +30,7 @@ class ExtractingUserData:
         self.count = None
         self.paramitres = None
         self.token = config["TOKEN"]["vk_user_token"]
+        self.token_s = config["TOKEN"]["vk_token"]
 
     def user_search(self, count, age_from, age_to, sex, city, country):
 
@@ -131,6 +133,14 @@ class ExtractingUserData:
         except KeyError:
             return "Страница пользователя закрыта настройками приватности!"
 
+    def extract_name(self, user_id):
+        self.user_id = user_id
+        self.paramitres = {'access_token': self.token_s, 'user_id': self.user_id, 'count': 5, 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
+        # print(request_generation.json()['response'][0]['first_name'])
+        return request_generation.json()['response'][0]['first_name']
+
+
     def like(self):
         pass
 
@@ -138,6 +148,6 @@ class ExtractingUserData:
         pass
 
 
-if __name__ == '__main__':
-    ex = ExtractingUserData()
-    pprint(ex.photo_extraction_with_marks('127862738'))
+# if __name__ == '__main__':
+#     ex = ExtractingUserData()
+#     pprint(ex.extract_name('127862738'))
