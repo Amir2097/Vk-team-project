@@ -73,7 +73,7 @@ def run_bot():
             request = event.text.lower()
 
             if request == "начать" or request == "привет" or request == "1":
-                namees = extr_name.extract_name(event.user_id)
+                namees = extr_name.extract_name(event.user_id, "2")
                 # TODO: Запрос на получение токена
                 '''Стартовое, основное меню для пользователя'''
                 write_msg(event.user_id, f"{namees} привет! Прошу ознакомиться с меню:", start_keyboard)
