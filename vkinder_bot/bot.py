@@ -81,6 +81,7 @@ def run_bot():
 
 
             if request == "начать" or request == "привет":
+                #TODO: Запрос на получение токена
                 '''Стартовое, основное меню для пользователя'''
                 write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
                 user_mode = 'start'

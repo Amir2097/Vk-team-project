@@ -31,6 +31,7 @@ class ExtractingUserData:
         self.token = config["TOKEN"]["vk_user_token"]
 
     def user_search(self, count, age_from, age_to, sex, city, country):
+
         """
         Метод поиска пользователей сайта VK по заданным параметрам, получает на вход параметры:
 
@@ -44,6 +45,7 @@ class ExtractingUserData:
         Поиск ведется ТОЛЬКО по страницам пользователей у которых установлен смейный статус "В активном поиске"
 
         """
+
         self.count = count
         self.age_from = age_from
         self.age_to = age_to
@@ -58,6 +60,7 @@ class ExtractingUserData:
         return request_generation.json()['response']['items']
 
     def photo_extraction(self, user_id):
+
         """
         Метод получения 3 фотографий пофиля которые имеют наибольшие LIKE, получает на вход параметры:
 
@@ -66,6 +69,7 @@ class ExtractingUserData:
         На выходе бедет
 
         """
+
         try:
             self.user_id = user_id
             self.dict_photo_and_like = {}
@@ -90,6 +94,7 @@ class ExtractingUserData:
         на выходе будет список формата [идентификатор_страны, идентификатор_города]
 
         """
+
         try:
             self.user_id = user_id
             self.dict_city_and_country = []
@@ -112,6 +117,7 @@ class ExtractingUserData:
 
         МЕТОД ВЫВОДИТ 5 ФОТОГРАФИЙ!!!!
         """
+
         try:
             self.user_id = user_id
             self.list_photo_extraction_with_marks = []
@@ -124,6 +130,12 @@ class ExtractingUserData:
             return self.list_photo_extraction_with_marks
         except KeyError:
             return "Страница пользователя закрыта настройками приватности!"
+
+    def like(self):
+        pass
+
+    def remote_like(self):
+        pass
 
 
 if __name__ == '__main__':
