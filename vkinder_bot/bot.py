@@ -40,7 +40,7 @@ def get_keyboard(buts):
 start_keyboard = get_keyboard([
     [('Критерии для поиска', 'синий'), ('Поиск людей', 'зеленый')],
     [('Что умеет делать бот', 'синий'), ('Черный Список', 'красный')],
-    [('Избранные', 'зеленый'), ('Создатели', 'синий')]
+    [('Избранные', 'зеленый'), ('Добавить ТОКЕН', 'синий')]
 ])
 
 '''Меню с 6 кнопками для непосредственно самого поиска'''
@@ -70,9 +70,6 @@ def run_bot():
 
 
             if request == "начать" or request == "привет":
-                #TODO: Запрос на получение токена
-                link_user = 'https://oauth.vk.com/authorize?client_id=6441755&display=page&redirect_uri=https://vk.com/im?sel=-217240550&scope=notify,photos,messages,offline&response_type=code&v=5.131'
-                write_msg(event.user_id, link_user)
                 '''Стартовое, основное меню для пользователя'''
                 write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
                 user_mode = 'start'
@@ -117,9 +114,12 @@ def run_bot():
                     # TODO обращение к базе
 
 
-                if request == "создатели":
-                    '''Выведение создателей (лучших в своем деле) данного бота'''
-                    write_msg(event.user_id, f"Создатели бота хотят быть неуязвимы и остаются в тени 62 группы..", start_keyboard)
+                if request == "добавить токен":
+                    '''Получение токена от самого пользователя'''
+                    # TODO: Запрос на получение токена
+                    link_user = 'https://oauth.vk.com/authorize?client_id=6441755&display=page&redirect_uri=https://vk.com/im?sel=-217240550&scope=notify,photos,messages,offline&response_type=code&v=5.131'
+                    write_msg(event.user_id, f"Получить токен вк для поиска можете по ссылке:", start_keyboard)
+                    write_msg(event.user_id, link_user, start_keyboard)
 
 
             if user_mode == 'info_search_people':
