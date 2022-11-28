@@ -11,12 +11,14 @@ class Auth:
     def __init__(self):
         self.user_id = None
 
-    def authorization_request(self, user_id):
-        self.user_id = user_id
+    def authorization_request(self):
+        link_user = 'https://oauth.vk.com/authorize?client_id=6441755&display=page&redirect_uri=https://vk.com' \
+                    '/app6441755&scope=notify,photos,messages,offline&response_type=code&v=5.131 '
 
 
 class ExtractingUserData:
     def __init__(self):
+        self.check = None
         self.list_photo_extraction_with_marks = None
         self.dict_city_and_country = None
         self.dict_photo_and_like = None
@@ -29,6 +31,7 @@ class ExtractingUserData:
         self.count = None
         self.paramitres = None
         self.token = config["TOKEN"]["vk_user_token"]
+        self.token_s = config["TOKEN"]["vk_token"]
 
     def user_search(self, count, age_from, age_to, sex, city, country):
 
@@ -131,6 +134,28 @@ class ExtractingUserData:
         except KeyError:
             return "Страница пользователя закрыта настройками приватности!"
 
+    def extract_name(self, user_id, check):
+        """
+               Метод для получения имени пользователя, получает на вход параметры:
+
+               user_id - id пользователя
+               check - если параметр равен "1" то будет выведенно только имя, если параметр равен "2" то будет выведенно
+                имя и фамилия
+
+        """
+        self.user_id = user_id
+        self.check = check
+        self.paramitres = {'access_token': self.token_s, 'user_id': self.user_id, 'count': 5, 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
+        # print(request_generation.json()['response'][0])
+        if self.check == '1':
+            return request_generation.json()['response'][0]['first_name']
+        elif self.check == '2':
+            names = (request_generation.json()['response'][0]['first_name']) + " " + \
+                    (request_generation.json()['response'][0]['last_name'])
+            return names
+
+
     def like(self):
         pass
 
@@ -138,6 +163,6 @@ class ExtractingUserData:
         pass
 
 
-if __name__ == '__main__':
-    ex = ExtractingUserData()
-    pprint(ex.photo_extraction_with_marks('127862738'))
+# if __name__ == '__main__':
+#     ex = ExtractingUserData()
+#     pprint(ex.extract_name('127862738', '2'))
