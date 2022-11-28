@@ -117,11 +117,16 @@ def run_bot():
                     # TODO обращение к базе
 
                 if request == "добавить токен":
-                    '''Получение токена от самого пользователя'''
+                    '''Запрос на добавление токена от пользователя в чат'''
                     # TODO: Запрос на получение токена
-                    link_user = 'https://oauth.vk.com/authorize?client_id=6441755&display=page&redirect_uri=https://vk.com/im?sel=-217240550&scope=notify,photos,messages,offline&response_type=code&v=5.131'
+                    link_user = ''
                     write_msg(event.user_id, f"Получить токен вк для поиска можете по ссылке:", start_keyboard)
                     write_msg(event.user_id, link_user, start_keyboard)
+
+                if 'vk1.a' in request:
+                    'Получение токена от пользователя'
+                    print(request)
+                    # TODO добавить метод доавления токена в базу данных
 
 
             if user_mode == 'info_search_people':
