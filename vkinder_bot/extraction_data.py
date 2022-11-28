@@ -1,25 +1,12 @@
 import configparser
-from pprint import pprint
-
 import requests
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
 
 
-class Auth:
-    def __init__(self):
-        self.user_id = None
-
-    def authorization_request(self):
-        link_user = 'https://oauth.vk.com/authorize?client_id=6441755&display=page&redirect_uri=https://vk.com' \
-                    '/app6441755&scope=notify,photos,messages,offline&response_type=code&v=5.131 '
-
-
 class ExtractingUserData:
     def __init__(self):
-        self.check = None
-        self.list_photo_extraction_with_marks = None
         self.dict_city_and_country = None
         self.dict_photo_and_like = None
         self.user_id = None
@@ -31,10 +18,8 @@ class ExtractingUserData:
         self.count = None
         self.paramitres = None
         self.token = config["TOKEN"]["vk_user_token"]
-        self.token_s = config["TOKEN"]["vk_token"]
 
     def user_search(self, count, age_from, age_to, sex, city, country):
-
         """
         Метод поиска пользователей сайта VK по заданным параметрам, получает на вход параметры:
 
@@ -48,7 +33,6 @@ class ExtractingUserData:
         Поиск ведется ТОЛЬКО по страницам пользователей у которых установлен смейный статус "В активном поиске"
 
         """
-
         self.count = count
         self.age_from = age_from
         self.age_to = age_to
@@ -63,21 +47,17 @@ class ExtractingUserData:
         return request_generation.json()['response']['items']
 
     def photo_extraction(self, user_id):
-
         """
         Метод получения 3 фотографий пофиля которые имеют наибольшие LIKE, получает на вход параметры:
 
         user_id - id пользователя
 
-        На выходе бедет
-
         """
-
         try:
             self.user_id = user_id
             self.dict_photo_and_like = {}
-            self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile',
-                               'extended': 1, 'photo_sizes': 0, 'v': 5.131}
+            self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile', 'extended': 1,
+                               'photo_sizes': 0, 'v': 5.131}
             request_generation = requests.get(url=f'https://api.vk.com/method/photos.get', params=self.paramitres)
 
             for reqer in request_generation.json()['response']['items']:
@@ -97,12 +77,10 @@ class ExtractingUserData:
         на выходе будет список формата [идентификатор_страны, идентификатор_города]
 
         """
-
         try:
             self.user_id = user_id
             self.dict_city_and_country = []
-            self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country',
-                               'v': 5.131}
+            self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country', 'v': 5.131}
             request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
             for reqer in request_generation.json()['response']:
                 self.dict_city_and_country.append(reqer['country']['id'])
@@ -111,58 +89,16 @@ class ExtractingUserData:
         except KeyError:
             return "Страница пользователя закрыта настройками приватности!"
 
-    def photo_extraction_with_marks(self, user_id):
+    def profile_info(self):
 
         """
-        Метод для получения списка фотографий где отмечен пользователь, получает на вход параметры:
+        Метод возвращающий информацию о текущем профиле
 
-        user_id - id пользователя
-
-        МЕТОД ВЫВОДИТ 5 ФОТОГРАФИЙ!!!!
-        """
-
-        try:
-            self.user_id = user_id
-            self.list_photo_extraction_with_marks = []
-            self.paramitres = {'access_token': self.token, 'user_id': self.user_id, 'count': 5, 'v': 5.131}
-            request_generation = requests.get(url=f'https://api.vk.com/method/photos.getUserPhotos',
-                                              params=self.paramitres)
-            for reqer in request_generation.json()['response']['items']:
-                self.list_photo_extraction_with_marks.append(reqer['sizes'][4]['url'])
-
-            return self.list_photo_extraction_with_marks
-        except KeyError:
-            return "Страница пользователя закрыта настройками приватности!"
-
-    def extract_name(self, user_id, check):
-        """
-               Метод для получения имени пользователя, получает на вход параметры:
-
-               user_id - id пользователя
-               check - если параметр равен "1" то будет выведенно только имя, если параметр равен "2" то будет выведенно
-                имя и фамилия
+        Этот метод не принимает параметров
 
         """
-        self.user_id = user_id
-        self.check = check
-        self.paramitres = {'access_token': self.token_s, 'user_id': self.user_id, 'count': 5, 'v': 5.131}
-        request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
-        # print(request_generation.json()['response'][0])
-        if self.check == '1':
-            return request_generation.json()['response'][0]['first_name']
-        elif self.check == '2':
-            names = (request_generation.json()['response'][0]['first_name']) + " " + \
-                    (request_generation.json()['response'][0]['last_name'])
-            return names
 
-
-    def like(self):
-        pass
-
-    def remote_like(self):
-        pass
-
-
-# if __name__ == '__main__':
-#     ex = ExtractingUserData()
-#     pprint(ex.extract_name('127862738', '2'))
+        self.paramitres = {'access_token': self.token, 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/account.getProfileInfo',
+                                          params=self.paramitres)
+        return request_generation.json()['response']
