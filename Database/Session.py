@@ -1,6 +1,7 @@
 import configparser
 import sqlalchemy as sq
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
+from vkinder_bot.extraction_data import ExtractingUserData
 
 Base = declarative_base()
 
@@ -13,6 +14,10 @@ class Mainuser(Base):
     name = sq.Column(sq.String(length=40))
     lastname = sq.Column(sq.String(length=40))
     date_of_birth = sq.Column(sq.DateTime)
+    token = sq.Column(sq.String(length=200), unique=True)
+
+    def __str__(self):
+        return f'{self.user_id}: {self.vk_id}, {self.name}, {self.lastname}, {self.date_of_birth}, {self.token}'
 
 
 class Favorite(Base):
@@ -84,3 +89,13 @@ class Connect:
         self.session.add(new_post)
         self.session.commit()
 
+    def founduser_database_entry(self, data):
+        """Метод принимает json из функции user_search и добавляет информацию в бд о пользователеях,
+                найденных в поиске"""
+        main_vk_id = str(ExtractingUserData().profile_info()['id'])                                                     # получение vk_id пользователя использующего бота
+        subq = Connect.session.query(Mainuser).filter(Mainuser.vk_id == main_vk_id).first()                             # получение первичного ключа user_id пользователя использующего бота
+        for record in data:                                                                                             # заполняем данные по user_id
+            new_post = Founduser(vk_id=record.get('id'), name=record.get('first_name'),
+                                 lastname=record.get('last_name'), user_id=subq.user_id)
+            self.session.add(new_post)
+            self.session.commit()
