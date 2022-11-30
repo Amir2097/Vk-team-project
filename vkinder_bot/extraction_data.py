@@ -2,9 +2,39 @@ import configparser
 from pprint import pprint
 
 import requests
+import vk_api
+import os
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
+
+class VKAuth:
+    '''Получение токена пользователя'''
+    def to_accept_token(self):
+        '''Функция возвращает токен пользователя (acces_token),
+        через введения логина и пароля (от ВК),
+        так же создание нового конфига в формате json'''
+        TOKEN = os.getenv("VK_USER_TOKEN")
+        if TOKEN:
+            vk_session = vk_api.VkApi(token=TOKEN)
+        else:
+            username: str = os.getenv("VK_USER_LOGIN")
+            password: str = os.getenv("VK_USER_PASS")
+            scope = 'users,notify,friends,photos,offline,wall'
+            if not username or not password:
+                username: str = input("Укажите свой логин: ")
+                password: str = input("Укажите свой пароль: ")
+            vk_session = vk_api.VkApi(username, password, scope=scope, api_version='5.124')
+
+        try:
+            vk_session.auth(token_only=True)
+        except vk_api.AuthError as error_msg:
+            print(error_msg)
+        return vk_session.token['access_token']
+
+
+vk_us = VKAuth() # Присваивание Класса авторизации
+token_vk = vk_us.to_accept_token() # Создание переменной для токена пользователя
 
 
 class ExtractingUserData:

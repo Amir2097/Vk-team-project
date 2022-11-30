@@ -86,6 +86,7 @@ class Connect:
 
         new_post = Mainuser(vk_id=data.get('id'), name=data.get('first_name'), lastname=data.get('last_name'),
                             date_of_birth=data.get('ddate'))
+
         self.session.add(new_post)
         self.session.commit()
 

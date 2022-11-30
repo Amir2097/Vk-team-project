@@ -61,6 +61,8 @@ sex_keyboard = get_keyboard([
 
 
 def run_bot():
+    # TODO: добавить запрос разрешения отправки сообщений!
+
     def write_msg(user_id, message, keyboard=None):
         vk.method('messages.send',
                   {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), 'keyboard': keyboard})
@@ -71,9 +73,9 @@ def run_bot():
             request = event.text.lower()
 
             if request == "начать" or request == "привет" or request == "1":
+                namees = extr_name.extract_name(event.user_id, "2")
                 '''Стартовое, основное меню для пользователя'''
-
-                write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
+                write_msg(event.user_id, f"{namees} привет! Прошу ознакомиться с меню:", start_keyboard)
                 user_mode = 'start'
 
             if request == "критерии для поиска":
@@ -117,7 +119,7 @@ def run_bot():
                 if request == "добавить токен":
                     '''Запрос на добавление токена от пользователя в чат'''
                     # TODO: Запрос на получение токена
-                    link_user = 'https://vkhost.github.io/'
+                    link_user = ''
                     write_msg(event.user_id, f"Получить токен вк для поиска можете по ссылке:", start_keyboard)
                     write_msg(event.user_id, link_user, start_keyboard)
 
@@ -177,4 +179,3 @@ def run_bot():
                     write_msg(event.user_id, "Пользователь добавлен в избранное")
                     # TODO: Здесь абсолютно таже схема, что и с ЧС, только список избранных
 
-run_bot()
