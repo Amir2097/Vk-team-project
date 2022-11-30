@@ -14,6 +14,10 @@ def startup():
         config.add_section("TOKEN")
         add_token = input("[SET]Введите токен сообщества - ")
         config.set("TOKEN", "vk_token", add_token)
+        add_user = input("[SET]Введите имя пользователя VK.COM - ")
+        config.set("TOKEN", "vk_user", add_user)
+        add_pass = input("[SET]Введите пароль VK.COM - ")
+        config.set("TOKEN", "vk_pass", add_pass)
 
         config.add_section("DATABASE")
         user_data = input("[SET] Введите имя пользователя базы данных - ")
