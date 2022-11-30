@@ -1,4 +1,6 @@
 import configparser
+from pprint import pprint
+
 import requests
 
 config = configparser.ConfigParser()
@@ -56,12 +58,12 @@ class ExtractingUserData:
         try:
             self.user_id = user_id
             self.dict_photo_and_like = {}
-            self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile', 'extended': 1,
+            self.paramitres = {'access_token': self.token, 'owner_id': self.user_id, 'album_id': 'profile',
+                               'extended': 1,
                                'photo_sizes': 0, 'v': 5.131}
             request_generation = requests.get(url=f'https://api.vk.com/method/photos.get', params=self.paramitres)
-
             for reqer in request_generation.json()['response']['items']:
-                self.dict_photo_and_like[(reqer['sizes'][3]['url'])] = reqer['likes']['count']
+                self.dict_photo_and_like[(reqer['sizes'][-1]['url'])] = reqer['likes']['count']
 
             return sorted(self.dict_photo_and_like, key=self.dict_photo_and_like.get)[-3:]
         except KeyError:
@@ -80,7 +82,8 @@ class ExtractingUserData:
         try:
             self.user_id = user_id
             self.dict_city_and_country = []
-            self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country', 'v': 5.131}
+            self.paramitres = {'access_token': self.token, 'user_ids': self.user_id, 'fields': 'city, country',
+                               'v': 5.131}
             request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
             for reqer in request_generation.json()['response']:
                 self.dict_city_and_country.append(reqer['country']['id'])
@@ -102,3 +105,7 @@ class ExtractingUserData:
         request_generation = requests.get(url=f'https://api.vk.com/method/account.getProfileInfo',
                                           params=self.paramitres)
         return request_generation.json()['response']
+
+
+# ex = ExtractingUserData()
+# pprint(ex.photo_extraction("132853375"))

@@ -14,8 +14,6 @@ def startup():
         config.add_section("TOKEN")
         add_token = input("[SET]Введите токен сообщества - ")
         config.set("TOKEN", "vk_token", add_token)
-        add_user_token = input("[SET]Введите токен служебной страницы (https://vkhost.github.io/) - ")
-        config.set("TOKEN", "vk_user_token", add_user_token)
 
         config.add_section("DATABASE")
         user_data = input("[SET] Введите имя пользователя базы данных - ")
