@@ -1,9 +1,6 @@
 import configparser
-from pprint import pprint
-
 import requests
 import vk_api
-import os
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
