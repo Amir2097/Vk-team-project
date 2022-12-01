@@ -73,9 +73,8 @@ def run_bot():
             request = event.text.lower()
 
             if request == "начать" or request == "привет" or request == "1":
-                namees = extr_name.extract_name(event.user_id, "2")
                 '''Стартовое, основное меню для пользователя'''
-                write_msg(event.user_id, f"{namees} привет! Прошу ознакомиться с меню:", start_keyboard)
+                write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
                 user_mode = 'start'
 
             if request == "критерии для поиска":

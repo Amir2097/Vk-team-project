@@ -1,0 +1,4 @@
+greenlet==2.0.1
+SQLAlchemy==1.4.44
+vk==3.0
+vk-api==11.9.9

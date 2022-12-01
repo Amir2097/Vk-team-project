@@ -124,5 +124,3 @@ class ExtractingUserData:
                                           params=self.paramitres)
         return request_generation.json()['response']
 
-
-print(to_accept_token())
