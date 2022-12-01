@@ -60,6 +60,7 @@ sex_keyboard = get_keyboard([
 ])
 
 
+
 def run_bot():
     # TODO: добавить запрос разрешения отправки сообщений!
 
@@ -68,14 +69,12 @@ def run_bot():
                   {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), 'keyboard': keyboard})
 
     for event in longpoll.listen():
-        # print(event.type)
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             request = event.text.lower()
 
             if request == "начать" or request == "привет" or request == "1":
-                namees = extr_name.extract_name(event.user_id, "2")
                 '''Стартовое, основное меню для пользователя'''
-                write_msg(event.user_id, f"{namees} привет! Прошу ознакомиться с меню:", start_keyboard)
+                write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
                 user_mode = 'start'
 
             if request == "критерии для поиска":
@@ -177,5 +176,4 @@ def run_bot():
                 if request == 'в избранное':
                     '''Добавляем страницу(id) в понравившийся список'''
                     write_msg(event.user_id, "Пользователь добавлен в избранное")
-                    # TODO: Здесь абсолютно таже схема, что и с ЧС, только список избранных
-
+                    # TODO: Здесь абсолютно таже схема, что и с ЧС, только список избран
