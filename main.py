@@ -32,11 +32,9 @@ def startup():
                 config.write(config_file)
 
         except KeyboardInterrupt:
-            os.system("clear")
             print("Выполнение настройки завершено по команде пользователя!")
 
         except ValueError:
-            os.system("clear")
             print("Ошибка записи в файл!!! Настройка прервана!")
 
 
