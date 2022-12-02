@@ -110,17 +110,17 @@ class ExtractingUserData:
         except KeyError:
             return "Страница пользователя закрыта настройками приватности!"
 
-    def profile_info(self):
+    def profile_info(self, main_vkid):
 
         """
         Метод возвращающий информацию о текущем профиле
 
-        Этот метод не принимает параметров
+        Метод принмает vk id пользователя использующего бота
 
         """
-
-        self.paramitres = {'access_token': self.token, 'v': 5.131}
-        request_generation = requests.get(url=f'https://api.vk.com/method/account.getProfileInfo',
+        self.main_vkid = main_vkid
+        self.paramitres = {'access_token': self.token, 'user_ids': self.main_vkid, 'fields': 'bdate', 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/users.get',
                                           params=self.paramitres)
-        return request_generation.json()['response']
+        return request_generation.json()['response'][0]
 

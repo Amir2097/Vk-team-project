@@ -93,16 +93,16 @@ class Connect:
     def founduser_database_entry(self, data):
         """Метод принимает json из функции user_search и photo_extraction. Добавляет информацию в бд о пользователеях,
                 найденных в поиске, а так же их фотографии"""
-        main_vk_id = str(ExtractingUserData().profile_info()['id'])                                                     # получение vk_id пользователя использующего бота
-        subq = Connect.session.query(Mainuser).filter(Mainuser.vk_id == main_vk_id).first()                             # находим запись в таблице mainuser пользователя использующего бот
-        for record in data:                                                                                             # заполняем данные по user_id
-            if record['is_closed'] == 0:                                                                                # проверяем чтобы профиль был открыт
-                new_post = Founduser(vk_id=record.get('id'), name=record.get('first_name'),                             # заполняем таблицу founduser
+        main_vk_id = str(ExtractingUserData().profile_info(32870366)['id'])
+        subq = Connect.session.query(Mainuser).filter(Mainuser.vk_id == main_vk_id).first()
+        for record in data:
+            if record['is_closed'] == 0:
+                new_post = Founduser(vk_id=record.get('id'), name=record.get('first_name'),
                                      lastname=record.get('last_name'), user_id=subq.user_id)
                 self.session.add(new_post)
                 self.session.commit()
-                subq_photo = Connect.session.query(Founduser).filter(Founduser.vk_id == str(record.get('id'))).first()  # находим запись в таблице founduser которая только-что была заполнена
+                subq_photo = Connect.session.query(Founduser).filter(Founduser.vk_id == str(record.get('id'))).first()
                 for iter in ExtractingUserData().photo_extraction(str(record.get('id'))):
-                    new_post_photo = Photo(link=iter, found_user_id=subq_photo.found_user_id)                           # заполняем значения поля табл photo соответствующей записи в founduser, по found_user_id
+                    new_post_photo = Photo(link=iter, found_user_id=subq_photo.found_user_id)
                     self.session.add(new_post_photo)
                     self.session.commit()
