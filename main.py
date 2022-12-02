@@ -32,10 +32,10 @@ def startup():
                 config.write(config_file)
 
         except KeyboardInterrupt:
-            print("Выполнение настройки завершено по команде пользователя!")
+            return "Выполнение настройки завершено по команде пользователя!"
 
         except ValueError:
-            print("Ошибка записи в файл!!! Настройка прервана!")
+            return "Ошибка записи в файл!!! Настройка прервана!"
 
 
 if __name__ == '__main__':
