@@ -1,6 +1,7 @@
 import configparser
 import requests
 import vk_api
+from Database import Session
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
@@ -162,3 +163,5 @@ class ExtractingUserData:
             requests.get(url=f'https://api.vk.com/method/likes.delete', params=self.paramitres)
         except KeyError:
             return "Ошибка удаления объекта из списока 'Мне нравится' !!!!"
+
+
