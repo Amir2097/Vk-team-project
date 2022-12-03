@@ -77,8 +77,8 @@ class Connect:
     engine = sq.create_engine(DSN)
     create_tables(engine)
 
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    session_mar = sessionmaker(bind=engine)
+    session = session_mar()
 
     def __init__(self):
         self.user_ids = None
