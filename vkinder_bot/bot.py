@@ -3,17 +3,34 @@ import configparser
 import vk_api, json
 from vk_api.longpoll import VkLongPoll, VkEventType
 import requests
+from Database.Session import Connect, Photo, Founduser, Mainuser
 # import sqlalchemy as sq
 # from sqlalchemy.orm import declarative_base, relationship
 # from Database.models import User, Favorite, Blocked, Photo, Founduser,
 
-from extraction_data import ExtractingUserData
+from vkinder_bot.extraction_data import ExtractingUserData
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
 vk = vk_api.VkApi(token=config["TOKEN"]["vk_token"])
 longpoll = VkLongPoll(vk)
 extr_name = ExtractingUserData()
+
+
+def sending_foundusers(main_vk_id):
+    token_communities = config["TOKEN"]["vk_token"]
+    query = Connect.session.query(Mainuser).filter(Mainuser.vk_id == str(main_vk_id)).first()
+    query_founduser = Connect.session.query(Founduser).filter(Founduser.user_id == query.user_id).first()
+    query_photo = Connect.session.query(Photo).filter(Photo.found_user_id == query_founduser.found_user_id).first()
+    usermessage = f'{query_founduser.name} {query_founduser.lastname}\nhttps://vk.com/id{query_founduser.vk_id}\n'
+    paramitres = {'access_token': token_communities, 'user_ids': main_vk_id,
+                  'random_id': 0, 'attachment': f'photo{query_founduser.vk_id}_{query_photo.media_id}',
+                  'v': 5.131}
+    return [usermessage, paramitres]
+
+
+def messages_send(paramitres):
+    requests.get(url=f'https://api.vk.com/method/messages.send', params=paramitres)
 
 
 def get_keyboard(buts):
@@ -163,7 +180,8 @@ def run_bot():
 
                 if request == 'поиск':
                     '''поиск людей через глобальный поиск'''
-                    write_msg(event.user_id, "Ищем дальше")
+                    write_msg(event.user_id, sending_foundusers(event.user_id)[0])
+                    messages_send(sending_foundusers(event.user_id)[1])
                     # TODO: Сюда мы напишем метод по поискую людей и будем выдавать их пользователю
 
                 if request == 'в чс':
@@ -177,3 +195,6 @@ def run_bot():
                     '''Добавляем страницу(id) в понравившийся список'''
                     write_msg(event.user_id, "Пользователь добавлен в избранное")
                     # TODO: Здесь абсолютно таже схема, что и с ЧС, только список избран
+
+
+run_bot()

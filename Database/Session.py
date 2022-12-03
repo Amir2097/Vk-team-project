@@ -55,6 +55,7 @@ class Photo(Base):
     photo_id = sq.Column(sq.Integer, primary_key=True)
     link = sq.Column(sq.String(length=200), nullable=False)
     quantity_like = sq.Column(sq.Integer)
+    media_id = sq.Column(sq.Integer)
     found_user_id = sq.Column(sq.Integer, sq.ForeignKey("founduser.found_user_id"), nullable=False)
     Founduser = relationship(Founduser, backref="foundusers")
 
@@ -69,6 +70,7 @@ class Connect:
 
     config = configparser.ConfigParser()
     config.read("../config_bot.cfg")
+    token_communities = config["TOKEN"]["vk_token"]
     db_user = config.get('DATABASE', 'db_user')
     db_password = config.get('DATABASE', 'db_password')
     db_host = config.get('DATABASE', 'db_host')
@@ -90,10 +92,10 @@ class Connect:
         self.session.add(new_post)
         self.session.commit()
 
-    def founduser_database_entry(self, data):
+    def founduser_database_entry(self, data, mainuser_vk):
         """Метод принимает json из функции user_search и photo_extraction. Добавляет информацию в бд о пользователеях,
                 найденных в поиске, а так же их фотографии"""
-        main_vk_id = str(ExtractingUserData().profile_info(32870366)['id'])
+        main_vk_id = str(ExtractingUserData().profile_info(mainuser_vk)['id'])
         subq = Connect.session.query(Mainuser).filter(Mainuser.vk_id == main_vk_id).first()
         for record in data:
             if record['is_closed'] == 0:
@@ -103,6 +105,7 @@ class Connect:
                 self.session.commit()
                 subq_photo = Connect.session.query(Founduser).filter(Founduser.vk_id == str(record.get('id'))).first()
                 for iter in ExtractingUserData().photo_extraction(str(record.get('id'))):
-                    new_post_photo = Photo(link=iter, found_user_id=subq_photo.found_user_id)
+                    new_post_photo = Photo(link=iter[0], quantity_like=iter[1][0],
+                                           media_id=iter[1][1], found_user_id=subq_photo.found_user_id)
                     self.session.add(new_post_photo)
                     self.session.commit()
