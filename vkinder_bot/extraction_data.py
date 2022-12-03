@@ -27,6 +27,9 @@ def to_accept_token() -> str:
 
 class ExtractingUserData:
     def __init__(self):
+        self.id_photo = None
+        self.id_user = None
+        self.main_vkid = None
         self.dict_city_and_country = None
         self.dict_photo_and_like = None
         self.user_id = None
@@ -124,3 +127,38 @@ class ExtractingUserData:
                                           params=self.paramitres)
         return request_generation.json()['response'][0]
 
+    def like(self, id_user, id_photo):
+        """
+        Метод добавляет указанный объект в список 'Мне нравится' (Like) текущего пользователя, принимает на вход:
+        id_user - Идентификатор владельца объекта
+        id_photo - Идентификатор объекта
+
+        https://dev.vk.com/method/likes.add
+        """
+
+        try:
+            self.id_user = id_user
+            self.id_photo = id_photo
+            self.paramitres = {'access_token': self.token, 'type': 'photo', 'owner_id': self.id_user,
+                               'item_id': self.id_photo, 'v': 5.131}
+            requests.get(url=f'https://api.vk.com/method/likes.add', params=self.paramitres)
+        except KeyError:
+            return "Ошибка добавления объекта в список 'Мне нравится' !!!!"
+
+    def dislike(self, id_user, id_photo):
+        """
+        Метод удаляет указанный объект из списка 'Мне нравится' (Like) текущего пользователя, принимает на вход:
+        id_user - Идентификатор владельца объекта
+        id_photo - Идентификатор объекта
+
+        https://dev.vk.com/method/likes.delete
+        """
+
+        try:
+            self.id_user = id_user
+            self.id_photo = id_photo
+            self.paramitres = {'access_token': self.token, 'type': 'photo', 'owner_id': self.id_user,
+                               'item_id': self.id_photo, 'v': 5.131}
+            requests.get(url=f'https://api.vk.com/method/likes.delete', params=self.paramitres)
+        except KeyError:
+            return "Ошибка удаления объекта из списока 'Мне нравится' !!!!"
