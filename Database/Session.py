@@ -68,7 +68,7 @@ class Connect:
     """Подключение к бд и создание сессии"""
 
     config = configparser.ConfigParser()
-    config.read("vkinder_bot/config_bot.cfg")
+    config.read("config_bot.cfg")
     db_user = config.get('DATABASE', 'db_user')
     db_password = config.get('DATABASE', 'db_password')
     db_host = config.get('DATABASE', 'db_host')
@@ -116,8 +116,8 @@ class Connect:
         self.user_ids = user_ids
         """
         Метод добавляет запись в таблицу избранных пользователей. Принимает на вход:
-        vk_id - идентификатор пользователя который ведет диалг с ботом
-        user_id - идентификатор пользователя которого добавляем в избранное
+        vk_id - идентификатор пользователя которого добавляем в избранное
+        user_id - идентификатор пользователя который ведет диалг с ботом
         """
         sending_data = Favorite(vk_id=self.vk_ids, user_id=self.user_ids)
         self.session.add(sending_data)
@@ -128,11 +128,9 @@ class Connect:
         self.user_ids = user_ids
         """
         Метод добавляет запись в таблицу заблокированных пользователей. Принимает на вход:
-        vk_id - идентификатор пользователя который ведет диалг с ботом
-        user_id - идентификатор пользователя которого добавляем в избранное
+        vk_id - идентификатор пользователя которого добавляем в избранное
+        user_id - идентификатор пользователя который ведет диалг с ботом
         """
         sending_data = Blocked(vk_id=self.vk_ids, user_id=self.user_ids)
         self.session.add(sending_data)
         self.session.commit()
-
-

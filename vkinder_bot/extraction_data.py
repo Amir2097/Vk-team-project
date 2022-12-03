@@ -1,7 +1,6 @@
 import configparser
 import requests
 import vk_api
-from Database import Session
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
@@ -22,7 +21,7 @@ def to_accept_token() -> str:
         vk_session.auth(token_only=True)
     except vk_api.AuthError as error_msg:
         print(error_msg)
-    set_token_vk = str(vk_session.token['access_token'])
+    set_token_vk = vk_session.token['access_token']
     return set_token_vk
 
 
@@ -163,5 +162,3 @@ class ExtractingUserData:
             requests.get(url=f'https://api.vk.com/method/likes.delete', params=self.paramitres)
         except KeyError:
             return "Ошибка удаления объекта из списока 'Мне нравится' !!!!"
-
-
