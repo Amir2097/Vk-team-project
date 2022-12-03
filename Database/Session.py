@@ -69,8 +69,9 @@ class Connect:
     """Подключение к бд и создание сессии"""
 
     config = configparser.ConfigParser()
-    config.read("../config_bot.cfg")
+    config.read("config_bot.cfg")
     token_communities = config["TOKEN"]["vk_token"]
+
     db_user = config.get('DATABASE', 'db_user')
     db_password = config.get('DATABASE', 'db_password')
     db_host = config.get('DATABASE', 'db_host')
@@ -79,8 +80,12 @@ class Connect:
     engine = sq.create_engine(DSN)
     create_tables(engine)
 
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    session_mar = sessionmaker(bind=engine)
+    session = session_mar()
+
+    def __init__(self):
+        self.user_ids = None
+        self.vk_ids = None
 
     def user_database_entry(self, data):
         """Метод принимает json из функции profile_info и добавляет информацию в бд о пользователе,
@@ -109,3 +114,27 @@ class Connect:
                                            media_id=iter[1][1], found_user_id=subq_photo.found_user_id)
                     self.session.add(new_post_photo)
                     self.session.commit()
+
+    def favorites(self, vk_ids, user_ids):
+        self.vk_ids = vk_ids
+        self.user_ids = user_ids
+        """
+        Метод добавляет запись в таблицу избранных пользователей. Принимает на вход:
+        vk_id - идентификатор пользователя которого добавляем в избранное
+        user_id - идентификатор пользователя который ведет диалг с ботом
+        """
+        sending_data = Favorite(vk_id=self.vk_ids, user_id=self.user_ids)
+        self.session.add(sending_data)
+        self.session.commit()
+
+    def blocked(self, vk_ids, user_ids):
+        self.vk_ids = vk_ids
+        self.user_ids = user_ids
+        """
+        Метод добавляет запись в таблицу заблокированных пользователей. Принимает на вход:
+        vk_id - идентификатор пользователя которого добавляем в избранное
+        user_id - идентификатор пользователя который ведет диалг с ботом
+        """
+        sending_data = Blocked(vk_id=self.vk_ids, user_id=self.user_ids)
+        self.session.add(sending_data)
+        self.session.commit()

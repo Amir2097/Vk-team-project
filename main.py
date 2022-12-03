@@ -1,8 +1,21 @@
 import os
 import configparser
+import importlib.util
 
 config = configparser.ConfigParser()
 configpath = "vkinder_bot/config_bot.cfg"
+
+
+def cprint_upred(text):
+    return "\033[1m\033[31m{}\033[0m".format(text)
+
+
+def cprint_yellow(text):
+    return "\033[33m{}\033[0m".format(text)
+
+
+def cprint_blue(text):
+    return "\033[34m{}\033[0m".format(text)
 
 
 def startup():
@@ -32,10 +45,10 @@ def startup():
                 config.write(config_file)
 
         except KeyboardInterrupt:
-            print("Выполнение настройки завершено по команде пользователя!")
+            cprint_upred("Выполнение настройки завершено по команде пользователя!")
 
         except ValueError:
-            print("Ошибка записи в файл!!! Настройка прервана!")
+            cprint_upred("Ошибка записи в файл!!! Настройка прервана!")
 
 
 if __name__ == '__main__':
