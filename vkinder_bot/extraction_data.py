@@ -1,6 +1,7 @@
 import configparser
 import requests
 import vk_api
+from operator import itemgetter
 
 config = configparser.ConfigParser()
 config.read("config_bot.cfg")
@@ -84,9 +85,8 @@ class ExtractingUserData:
                                'photo_sizes': 0, 'v': 5.131}
             request_generation = requests.get(url=f'https://api.vk.com/method/photos.get', params=self.paramitres)
             for reqer in request_generation.json()['response']['items']:
-                self.dict_photo_and_like[(reqer['sizes'][-1]['url'])] = reqer['likes']['count']
-
-            return sorted(self.dict_photo_and_like, key=self.dict_photo_and_like.get)[-3:]
+                self.dict_photo_and_like[(reqer['sizes'][-1]['url'])] = reqer['likes']['count'], reqer['id']
+            return sorted(self.dict_photo_and_like.items(), key=itemgetter(1))[-3:]
         except KeyError:
             return "Страница пользователя закрыта настройками приватности!"
 
