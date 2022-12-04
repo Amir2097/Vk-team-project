@@ -7,25 +7,6 @@ config = configparser.ConfigParser()
 config.read("config_bot.cfg")
 
 
-def to_accept_token() -> str:
-    """Функция возвращает токен пользователя (acces_token),
-    через введения логина и пароля (от ВК),
-    так же создание нового конфига в формате json"""
-    try:
-        vk_session = vk_api.VkApi(token=config["TOKEN"]["vk_user_token"])
-    except KeyError:
-        username = config["TOKEN"]["vk_user"]
-        password = config["TOKEN"]["vk_pass"]
-        scope = 'users,notify,friends,photos,offline,wall'
-        vk_session = vk_api.VkApi(username, password, scope=scope, api_version='5.124')
-    try:
-        vk_session.auth(token_only=True)
-    except vk_api.AuthError as error_msg:
-        print(error_msg)
-    set_token_vk = vk_session.token['access_token']
-    return set_token_vk
-
-
 class ExtractingUserData:
     def __init__(self):
         self.id_photo = None

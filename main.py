@@ -1,3 +1,4 @@
+import vk_api
 import os
 import configparser
 import psycopg2
@@ -52,6 +53,20 @@ def startup():
             config.set("TOKEN", "vk_user", add_user)
             add_pass = getpass("[SET]Введите пароль VK.COM - ")
             config.set("TOKEN", "vk_pass", add_pass)
+
+            try:
+                vk_session = vk_api.VkApi(token=config["TOKEN"]["vk_user_token"])
+            except KeyError:
+                username = config["TOKEN"]["vk_user"]
+                password = config["TOKEN"]["vk_pass"]
+                scope = 'users,notify,friends,photos,offline,wall'
+                vk_session = vk_api.VkApi(username, password, scope=scope, api_version='5.124')
+            try:
+                vk_session.auth(token_only=True)
+            except vk_api.AuthError as error_msg:
+                print(error_msg)
+            set_token_vk = vk_session.token['access_token']
+            config.set("TOKEN", "vk_user_token", set_token_vk)
 
             cprint_redtext("Настройка взаимодействия с базой данных")
             config.add_section("DATABASE")
