@@ -1,3 +1,5 @@
-SQLAlchemy
-requests
-vk-api
+SQLAlchemy==1.4.44
+requests==2.28.1
+psycopg2-binary==2.9.5
+vk-api==11.9.9
+vk==3.0
