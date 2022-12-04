@@ -70,8 +70,10 @@ def startup():
                     port="5432",
                     connect_timeout=1)
                 conn.close()
+
                 with open(configpath, "w") as config_file:
                     config.write(config_file)
+
                 cprint_text("[INFO] Соединение с базой настроено! Конфигурация записана!")
                 os.system("pip install -r requirements.txt")
             except psycopg2.OperationalError:
