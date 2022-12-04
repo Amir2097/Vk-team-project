@@ -68,6 +68,12 @@ def startup():
             set_token_vk = vk_session.token['access_token']
             config.set("TOKEN", "vk_user_token", set_token_vk)
 
+            if os.path.isfile('vk_config.v2.json'):
+                os.remove('vk_config.v2.json')
+                cprint_redtext("[INFO] Временный файл удален!")
+            else:
+                cprint_redtext("[INFO] Временный файл не найден!")
+
             cprint_redtext("Настройка взаимодействия с базой данных")
             config.add_section("DATABASE")
             user_data = input("[SET] Введите имя пользователя базы данных - ")
