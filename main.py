@@ -1,7 +1,7 @@
-import vk_api
 import os
-import configparser
+import vk_api
 import psycopg2
+import configparser
 from getpass import getpass
 
 config = configparser.ConfigParser()
@@ -36,16 +36,16 @@ def startup():
     else:
         try:
             cprint_redtext("ПЕРВОНАЧАЛЬНАЯ НАСТРОЙКА ПРОГРАММЫ")
+            cprint_redtext("+" * 34)
             cprint_text(
-                """
-[!] Программа запущена впервый раз! 
+                """[!] Программа запущена впервый раз! 
 [!] Необходимо произвести первоначальную настройку!
 [!] Данное действие необходимо произвести только один раз, последующие включения будут проходить в 
     штатном режиме
     
-[!] Для прекращения процесса первичной настройки, нажмите [CTRL] + [C]
-            """)
-            cprint_redtext("Настройка взаимодействия с ВКонтакте")
+[!] Для прекращения процесса первичной настройки, нажмите [CTRL] + [C]""")
+            cprint_redtext("+" * 34)
+            cprint_redtext("Настройка взаимодействия с ВКонтакте \n")
             config.add_section("TOKEN")
             add_token = getpass("[SET]Введите токен сообщества в котором будет работать БОТ - ")
             config.set("TOKEN", "vk_token", add_token)
