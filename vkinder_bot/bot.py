@@ -199,6 +199,7 @@ def run_bot():
                 if request == 'поиск':
                     '''поиск людей через глобальный поиск'''
                     write_msg(event.user_id, next(iterator_start))
+
                     # TODO: Сюда мы напишем метод по поискую людей и будем выдавать их пользователю
 
                 if request == 'в чс':
