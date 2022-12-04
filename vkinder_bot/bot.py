@@ -4,6 +4,8 @@ import vk_api, json
 from vk_api.longpoll import VkLongPoll, VkEventType
 import requests
 from Database.Session import Connect, Photo, Founduser, Mainuser
+import psycopg2
+import sqlalchemy
 # import sqlalchemy as sq
 # from sqlalchemy.orm import declarative_base, relationship
 # from Database.models import User, Favorite, Blocked, Photo, Founduser,
@@ -19,6 +21,7 @@ extr_name = ExtractingUserData()
 
 class sending_messages:
     """Итератор для вывода данных сформированных в бд о найденных пользователях"""
+
     def __init__(self, main_vk_id):
         self.main_vk_id = main_vk_id
         self.token_communities = config["TOKEN"]["vk_token"]
@@ -37,11 +40,12 @@ class sending_messages:
             attachment = [f'photo{self.value_list.vk_id}_{photo_iter.media_id}' for photo_iter in self.query_photo]
             new_attachment = ','.join(attachment)
             self.paramitres = {'access_token': self.token_communities, 'user_ids': self.main_vk_id,
-                          'random_id': 0, 'attachment': new_attachment, 'v': 5.131}
+                               'random_id': 0, 'attachment': new_attachment, 'v': 5.131}
             requests.get(url=f'https://api.vk.com/method/messages.send', params=self.paramitres)
         else:
             self.usermessage = 'список людей закончился, для того, чтобы начать с начала нажми "Поиск"'
-            self.query_founduser = Connect.session.query(Founduser).filter(Founduser.user_id == self.query.user_id).all()
+            self.query_founduser = Connect.session.query(Founduser).filter(
+                Founduser.user_id == self.query.user_id).all()
         return self.usermessage
 
 
@@ -89,8 +93,8 @@ sex_keyboard = get_keyboard([
 ])
 
 
-
 def run_bot():
+    global age_from, age_to, user_sex
 
     def write_msg(user_id, message, keyboard=None):
         vk.method('messages.send',
@@ -101,13 +105,15 @@ def run_bot():
             request = event.text.lower()
 
             if request == "начать" or request == "привет" or request == "1":
-                query_main = Connect.session.query(Mainuser).filter(Mainuser.vk_id == event.user_id).first()
-                if not query_main:
+                try:
                     main_user_vk = ExtractingUserData().profile_info(event.user_id)
                     Connect().user_database_entry(main_user_vk)
-                '''Стартовое, основное меню для пользователя'''
-                write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
-                user_mode = 'start'
+                    write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
+                    user_mode = 'start'
+                except:
+                    '''Стартовое, основное меню для пользователя'''
+                    write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
+                    user_mode = 'start'
 
             if request == "критерии для поиска":
                 '''Переход в меню для фильтрации данных пользователя'''
@@ -160,7 +166,6 @@ def run_bot():
                 #     print(request)
                 #     # TODO добавить метод доавления токена в базу данных
 
-
             if user_mode == 'info_search_people':
 
                 if request == "мужчина":
@@ -180,9 +185,9 @@ def run_bot():
                     age_to = int(request) + 3
                     # TODO age_from возраст(-3) и age_to(+3), к ним добавить методы для поиска
 
-                data_found_user = ExtractingUserData().user_search(count=9, age_from=age_from, age_to=age_to, sex=user_sex)
-                Connect().founduser_database_entry(data_found_user, event.user_id)
-
+                    data_found_user = ExtractingUserData().user_search(count=9, age_from=age_from, age_to=age_to,
+                                                                       sex=user_sex)
+                    Connect().founduser_database_entry(data_found_user, event.user_id)
 
             if user_mode == 'search_people':
 
