@@ -43,7 +43,7 @@ class ExtractingUserData:
         self.paramitres = None
         self.token = config["TOKEN"]["vk_user_token"]
 
-    def user_search(self, count, age_from, age_to, sex, city, country):
+    def user_search(self, count, age_from, age_to, sex, city=1, country=1):
         """
         Метод поиска пользователей сайта VK по заданным параметрам, получает на вход параметры:
 

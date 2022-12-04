@@ -7,7 +7,7 @@ from Database.Session import Connect, Photo, Founduser, Mainuser
 # import sqlalchemy as sq
 # from sqlalchemy.orm import declarative_base, relationship
 # from Database.models import User, Favorite, Blocked, Photo, Founduser,
-
+from Database.Session import Connect
 from vkinder_bot.extraction_data import ExtractingUserData
 
 config = configparser.ConfigParser()
@@ -91,7 +91,6 @@ sex_keyboard = get_keyboard([
 
 
 def run_bot():
-    # TODO: добавить запрос разрешения отправки сообщений!
 
     def write_msg(user_id, message, keyboard=None):
         vk.method('messages.send',
@@ -102,6 +101,8 @@ def run_bot():
             request = event.text.lower()
 
             if request == "начать" or request == "привет" or request == "1":
+                main_user_vk = ExtractingUserData().profile_info(event.user_id)
+                Connect().user_database_entry(main_user_vk)
                 '''Стартовое, основное меню для пользователя'''
                 write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
                 user_mode = 'start'
@@ -145,17 +146,17 @@ def run_bot():
                     write_msg(event.user_id, f"Ваш список ЧС:", start_keyboard)
                     # TODO обращение к базе
 
-                if request == "добавить токен":
-                    '''Запрос на добавление токена от пользователя в чат'''
-                    # TODO: Запрос на получение токена
-                    link_user = ''
-                    write_msg(event.user_id, f"Получить токен вк для поиска можете по ссылке:", start_keyboard)
-                    write_msg(event.user_id, link_user, start_keyboard)
-
-                if 'vk1.a' in request:
-                    'Получение токена от пользователя'
-                    print(request)
-                    # TODO добавить метод доавления токена в базу данных
+                # if request == "добавить токен":
+                #     '''Запрос на добавление токена от пользователя в чат'''
+                #     # TODO: Запрос на получение токена
+                #     link_user = ''
+                #     write_msg(event.user_id, f"Получить токен вк для поиска можете по ссылке:", start_keyboard)
+                #     write_msg(event.user_id, link_user, start_keyboard)
+                #
+                # if 'vk1.a' in request:
+                #     'Получение токена от пользователя'
+                #     print(request)
+                #     # TODO добавить метод доавления токена в базу данных
 
 
             if user_mode == 'info_search_people':
@@ -176,6 +177,10 @@ def run_bot():
                     age_from = int(request) - 3
                     age_to = int(request) + 3
                     # TODO age_from возраст(-3) и age_to(+3), к ним добавить методы для поиска
+
+                data_found_user = ExtractingUserData().user_search(count=9, age_from=age_from, age_to=age_to, sex=user_sex)
+                Connect().founduser_database_entry(data_found_user, event.user_id)
+
 
             if user_mode == 'search_people':
 
