@@ -101,8 +101,10 @@ def run_bot():
             request = event.text.lower()
 
             if request == "начать" or request == "привет" or request == "1":
-                main_user_vk = ExtractingUserData().profile_info(event.user_id)
-                Connect().user_database_entry(main_user_vk)
+                query_main = Connect.session.query(Mainuser).filter(Mainuser.vk_id == event.user_id).first()
+                if not query_main:
+                    main_user_vk = ExtractingUserData().profile_info(event.user_id)
+                    Connect().user_database_entry(main_user_vk)
                 '''Стартовое, основное меню для пользователя'''
                 write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
                 user_mode = 'start'
