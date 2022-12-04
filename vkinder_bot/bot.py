@@ -17,20 +17,32 @@ longpoll = VkLongPoll(vk)
 extr_name = ExtractingUserData()
 
 
-def sending_foundusers(main_vk_id):
-    token_communities = config["TOKEN"]["vk_token"]
-    query = Connect.session.query(Mainuser).filter(Mainuser.vk_id == str(main_vk_id)).first()
-    query_founduser = Connect.session.query(Founduser).filter(Founduser.user_id == query.user_id).first()
-    query_photo = Connect.session.query(Photo).filter(Photo.found_user_id == query_founduser.found_user_id).first()
-    usermessage = f'{query_founduser.name} {query_founduser.lastname}\nhttps://vk.com/id{query_founduser.vk_id}\n'
-    paramitres = {'access_token': token_communities, 'user_ids': main_vk_id,
-                  'random_id': 0, 'attachment': f'photo{query_founduser.vk_id}_{query_photo.media_id}',
-                  'v': 5.131}
-    return [usermessage, paramitres]
+class sending_messages:
+    """Итератор для вывода данных сформированных в бд о найденных пользователях"""
+    def __init__(self, main_vk_id):
+        self.main_vk_id = main_vk_id
+        self.token_communities = config["TOKEN"]["vk_token"]
+        self.query = Connect.session.query(Mainuser).filter(Mainuser.vk_id == str(main_vk_id)).first()
+        self.query_founduser = Connect.session.query(Founduser).filter(Founduser.user_id == self.query.user_id).all()
 
+    def __iter__(self):
+        return self
 
-def messages_send(paramitres):
-    requests.get(url=f'https://api.vk.com/method/messages.send', params=paramitres)
+    def __next__(self):
+        if self.query_founduser:
+            self.value_list = self.query_founduser.pop()
+            self.usermessage = f'{self.value_list.name} {self.value_list.lastname}\nhttps://vk.com/id{self.value_list.vk_id}\n'
+            self.query_photo = Connect.session.query(Photo).filter(
+                Photo.found_user_id == self.value_list.found_user_id).all()
+            attachment = [f'photo{self.value_list.vk_id}_{photo_iter.media_id}' for photo_iter in self.query_photo]
+            new_attachment = ','.join(attachment)
+            self.paramitres = {'access_token': self.token_communities, 'user_ids': self.main_vk_id,
+                          'random_id': 0, 'attachment': new_attachment, 'v': 5.131}
+            requests.get(url=f'https://api.vk.com/method/messages.send', params=self.paramitres)
+        else:
+            self.usermessage = 'список людей закончился, для того, чтобы начать с начала нажми "Поиск"'
+            self.query_founduser = Connect.session.query(Founduser).filter(Founduser.user_id == self.query.user_id).all()
+        return self.usermessage
 
 
 def get_keyboard(buts):
@@ -103,6 +115,7 @@ def run_bot():
                 '''Переход пользователя на следующее меню для поиска партнеров'''
                 write_msg(event.user_id, "Управляйте кнопками и просматривайте варианты!", process_keyboard)
                 user_mode = 'search_people'
+                iterator_start = sending_messages(event.user_id)
 
             if request == "назад":
                 '''Переход в основное, стартовое меню'''
@@ -180,8 +193,7 @@ def run_bot():
 
                 if request == 'поиск':
                     '''поиск людей через глобальный поиск'''
-                    write_msg(event.user_id, sending_foundusers(event.user_id)[0])
-                    messages_send(sending_foundusers(event.user_id)[1])
+                    write_msg(event.user_id, next(iterator_start))
                     # TODO: Сюда мы напишем метод по поискую людей и будем выдавать их пользователю
 
                 if request == 'в чс':

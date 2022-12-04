@@ -81,7 +81,9 @@ class Connect:
 
     DSN = "postgresql://%s:%s@%s:5432/vkinder" % (db_user, db_password, db_host)
     engine = sq.create_engine(DSN)
+    # remove_tables(engine)
     create_tables(engine)
+
 
     session_mar = sessionmaker(bind=engine)
     session = session_mar()
@@ -141,3 +143,13 @@ class Connect:
         sending_data = Blocked(vk_id=self.vk_ids, user_id=self.user_ids)
         self.session.add(sending_data)
         self.session.commit()
+
+
+# sqr = ExtractingUserData()
+# location = sqr.extract_city_and_country(32870366)
+# city = location[1]
+# country = location[0]
+# record = sqr.user_search(20, 25, 30, 1, city, country)
+# data = sqr.profile_info(32870366)
+# Connect().user_database_entry(data)
+# Connect().founduser_database_entry(record, 32870366)
