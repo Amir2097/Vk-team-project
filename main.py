@@ -1,5 +1,6 @@
 import os
 import configparser
+import psycopg2
 
 config = configparser.ConfigParser()
 configpath = "vkinder_bot/config_bot.cfg"
@@ -60,16 +61,28 @@ def startup():
             host_data = input("[SET] Введите хост базы данных - ")
             config.set("DATABASE", "db_host", host_data)
 
-            with open(configpath, "w") as config_file:
-                config.write(config_file)
-
-            os.system("pip install -r requirements.txt")
+            try:
+                conn = psycopg2.connect(
+                    dbname="vkinder",
+                    user=user_data,
+                    host=host_data,
+                    password=password_data,
+                    port="5432",
+                    connect_timeout=1)
+                conn.close()
+                with open(configpath, "w") as config_file:
+                    config.write(config_file)
+                cprint_text("[INFO] Соединение с базой настроено! Конфигурация записана!")
+                os.system("pip install -r requirements.txt")
+            except psycopg2.OperationalError:
+                cprint_redtext("[ERROR] БАЗА ДАННЫХ НЕДОСТУПНА!!!!")
+                raise ValueError('oops!')
 
         except KeyboardInterrupt:
             cprint_upred("Выполнение настройки завершено по команде пользователя!")
 
         except ValueError:
-            cprint_upred("Ошибка записи в файл!!! Настройка прервана!")
+            pass
 
 
 if __name__ == '__main__':
