@@ -76,6 +76,7 @@ def startup():
 
                 cprint_text("[INFO] Соединение с базой настроено! Конфигурация записана!")
                 os.system("pip install -r requirements.txt")
+
             except psycopg2.OperationalError:
                 cprint_redtext("[ERROR] БАЗА ДАННЫХ НЕДОСТУПНА!!!!")
                 raise ValueError('oops!')
