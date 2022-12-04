@@ -61,8 +61,11 @@ class Photo(Base):
 
 
 def create_tables(engine):
-    # Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+
+
+def remove_tables(engine):
+    Base.metadata.drop_all(engine)
 
 
 class Connect:
