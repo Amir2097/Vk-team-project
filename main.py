@@ -1,6 +1,7 @@
 import os
 import configparser
 import psycopg2
+from getpass import getpass
 
 config = configparser.ConfigParser()
 configpath = "vkinder_bot/config_bot.cfg"
@@ -45,18 +46,18 @@ def startup():
             """)
             cprint_redtext("Настройка взаимодействия с ВКонтакте")
             config.add_section("TOKEN")
-            add_token = input("[SET]Введите токен сообщества в котором будет работать БОТ - ")
+            add_token = getpass("[SET]Введите токен сообщества в котором будет работать БОТ - ")
             config.set("TOKEN", "vk_token", add_token)
             add_user = input("[SET]Введите имя пользователя VK.COM (от его имени будут работать некоторые запросы)- ")
             config.set("TOKEN", "vk_user", add_user)
-            add_pass = input("[SET]Введите пароль VK.COM - ")
+            add_pass = getpass("[SET]Введите пароль VK.COM - ")
             config.set("TOKEN", "vk_pass", add_pass)
 
             cprint_redtext("Настройка взаимодействия с базой данных")
             config.add_section("DATABASE")
             user_data = input("[SET] Введите имя пользователя базы данных - ")
             config.set("DATABASE", "db_user", user_data)
-            password_data = input("[SET] Введите пароль пользователя базы данных - ")
+            password_data = getpass("[SET] Введите пароль пользователя базы данных - ")
             config.set("DATABASE", "db_password", password_data)
             host_data = input("[SET] Введите хост базы данных - ")
             config.set("DATABASE", "db_host", host_data)
