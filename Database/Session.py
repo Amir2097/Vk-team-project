@@ -163,10 +163,9 @@ class Connect:
             for subq_photo_found in subq_photo_foundusers:
                 self.session.delete(subq_photo_found)
                 self.session.commit()
-
-        for subq_peop in subq_people:
-            self.session.delete(subq_peop)
+            self.session.delete(subq_peoples)
             self.session.commit()
+
 
 
 
