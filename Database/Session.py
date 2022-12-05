@@ -81,7 +81,7 @@ class Connect:
     """Подключение к бд и создание сессии"""
 
     config = configparser.ConfigParser()
-    config.read("config_bot.cfg")
+    config.read("vkinder_bot/config_bot.cfg")
     token_communities = config["TOKEN"]["vk_token"]
     db_user = config["DATABASE"]["db_user"]
     db_password = config["DATABASE"]["db_password"]
@@ -163,6 +163,10 @@ class Connect:
             for subq_photo_found in subq_photo_foundusers:
                 self.session.delete(subq_photo_found)
                 self.session.commit()
+
+        for subq_peop in subq_people:
+            self.session.delete(subq_peop)
+            self.session.commit()
 
 
 

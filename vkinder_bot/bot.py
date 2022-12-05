@@ -189,14 +189,14 @@ def run_bot():
                     found_double_id = Connect.session.query(Founduser).filter(Founduser.user_id == double_user_id.user_id).first()
                     if found_double_id == None:
                         write_msg(event.user_id, f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
-                        City_user = ExtractingUserData().extract_city_and_country(event.user_id)
+                        City_user = ExtractingUserData().extract_city_and_country(str(event.user_id))
                         data_found_user = ExtractingUserData().user_search(count=17, age_from=age_from, age_to=age_to,
                                                                            sex=user_sex, city=City_user[1],
                                                                            country=City_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
                     else:
-                        Connect().delete_found_users(event.user_id)
+                        Connect().delete_found_users(str(event.user_id))
                         write_msg(event.user_id, f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(event.user_id)
                         data_found_user = ExtractingUserData().user_search(count=17, age_from=age_from, age_to=age_to,

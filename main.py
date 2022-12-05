@@ -33,10 +33,11 @@ def startup():
     if os.path.exists(configpath):
         cprint_redtext("Бот запущен!")
         from vkinder_bot.bot import run_bot
-        try:
-            run_bot()
-        except:
-            cprint_redtext(" !!!!!!!!!! Ошибка работы БОТА !!!!!!!!!! ")
+        run_bot()
+        # try:
+        #     run_bot()
+        # except:
+        #     cprint_redtext(" !!!!!!!!!! Ошибка работы БОТА !!!!!!!!!! ")
     else:
         try:
             cprint_redtext("ПЕРВОНАЧАЛЬНАЯ НАСТРОЙКА ПРОГРАММЫ")
