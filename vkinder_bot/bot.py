@@ -185,8 +185,10 @@ def run_bot():
                 if len(request) == 2:
                     age_from = int(request) - 3
                     age_to = int(request) + 3
-
-                    found_double_id = Connect.session.query(Founduser).filter(Founduser.user_id == double_user_id.user_id).first()
+                    try:
+                        found_double_id = Connect.session.query(Founduser).filter(Founduser.user_id == double_user_id.user_id).first()
+                    except AttributeError:
+                        continue
                     if found_double_id == None:
                         write_msg(event.user_id, f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(str(event.user_id))
@@ -196,6 +198,8 @@ def run_bot():
                         Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
                     else:
+                        write_msg(event.user_id,
+                                  f"Происходит обновление БД, ожидайте ответа о завершении:")
                         Connect().delete_found_users(str(event.user_id))
                         write_msg(event.user_id, f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(event.user_id)
