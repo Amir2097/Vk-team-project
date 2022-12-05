@@ -33,6 +33,7 @@ def startup():
     if os.path.exists(configpath):
         from vkinder_bot.bot import run_bot
         run_bot()
+        cprint_redtext("Бот запущен!")
     else:
         try:
             cprint_redtext("ПЕРВОНАЧАЛЬНАЯ НАСТРОЙКА ПРОГРАММЫ")
@@ -47,7 +48,7 @@ def startup():
             cprint_redtext("+" * 34)
             cprint_redtext("Настройка взаимодействия с ВКонтакте \n")
             config.add_section("TOKEN")
-            add_token = getpass("[SET]Введите токен сообщества в котором будет работать БОТ - ")
+            add_token = input("[SET]Введите токен сообщества в котором будет работать БОТ - ")
             config.set("TOKEN", "vk_token", add_token)
             add_user = input("[SET]Введите имя пользователя VK.COM (от его имени будут работать некоторые запросы)- ")
             config.set("TOKEN", "vk_user", add_user)
