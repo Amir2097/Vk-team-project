@@ -13,8 +13,9 @@ from Database.Session import Connect
 from vkinder_bot.extraction_data import ExtractingUserData
 
 config = configparser.ConfigParser()
-config.read("config_bot.cfg")
-vk = vk_api.VkApi(token=config["TOKEN"]["vk_token"])
+config.read("vkinder_bot/config_bot.cfg")
+tokenson = config["TOKEN"]["vk_token"]
+vk = vk_api.VkApi(token=tokenson)
 longpoll = VkLongPoll(vk)
 extr_name = ExtractingUserData()
 

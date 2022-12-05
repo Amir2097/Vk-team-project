@@ -4,7 +4,7 @@ import vk_api
 from operator import itemgetter
 
 config = configparser.ConfigParser()
-config.read("config_bot.cfg")
+config.read("vkinder_bot/config_bot.cfg")
 
 
 class ExtractingUserData:

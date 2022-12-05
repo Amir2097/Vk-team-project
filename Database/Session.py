@@ -72,7 +72,7 @@ class Connect:
     """Подключение к бд и создание сессии"""
 
     config = configparser.ConfigParser()
-    config.read("config_bot.cfg")
+    config.read("vkinder_bot/config_bot.cfg")
     token_communities = config["TOKEN"]["vk_token"]
 
     db_user = config.get('DATABASE', 'db_user')
@@ -83,7 +83,6 @@ class Connect:
     engine = sq.create_engine(DSN)
     # remove_tables(engine)
     create_tables(engine)
-
 
     session_mar = sessionmaker(bind=engine)
     session = session_mar()
@@ -143,7 +142,6 @@ class Connect:
         sending_data = Blocked(vk_id=self.vk_ids, user_id=self.user_ids)
         self.session.add(sending_data)
         self.session.commit()
-
 
 # sqr = ExtractingUserData()
 # location = sqr.extract_city_and_country(32870366)
