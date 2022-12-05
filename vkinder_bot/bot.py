@@ -107,7 +107,7 @@ def run_bot():
 
             if request == "начать" or request == "привет" or request == "1":
                 double_user_id = Connect.session.query(Mainuser).filter(Mainuser.vk_id == str(event.user_id)).first()
-                if not double_user_id:
+                if double_user_id == None:
                     main_user_vk = ExtractingUserData().profile_info(event.user_id)
                     Connect().user_database_entry(main_user_vk)
                     write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
@@ -187,16 +187,22 @@ def run_bot():
                     age_to = int(request) + 3
 
                     found_double_id = Connect.session.query(Founduser).filter(Founduser.user_id == double_user_id.user_id).first()
-                    print(found_double_id)
                     if found_double_id == None:
+                        write_msg(event.user_id, f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(event.user_id)
-                        print(City_user[1], City_user[0])
-                        data_found_user = ExtractingUserData().user_search(count=177, age_from=age_from, age_to=age_to,
+                        data_found_user = ExtractingUserData().user_search(count=17, age_from=age_from, age_to=age_to,
                                                                            sex=user_sex, city=City_user[1],
                                                                            country=City_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
                     else:
+                        Connect().delete_found_users(event.user_id)
+                        write_msg(event.user_id, f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
+                        City_user = ExtractingUserData().extract_city_and_country(event.user_id)
+                        data_found_user = ExtractingUserData().user_search(count=17, age_from=age_from, age_to=age_to,
+                                                                           sex=user_sex, city=City_user[1],
+                                                                           country=City_user[0])
+                        Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
 
             if user_mode == 'search_people':
@@ -209,7 +215,7 @@ def run_bot():
 
                 if request == 'убрать лайк':
                     '''Убирает лайк с фото пользователя и убирает пользователя из списка Избранное'''
-                    # TODO: Метод убирания лайка с фото
+                    ExtractingUserData().like()
                     '''Убираем пользователя со списка Избранное'''
                     # TODO: like_me_list.remove(search_users_id???)
 

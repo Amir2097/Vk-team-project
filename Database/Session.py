@@ -143,6 +143,27 @@ class Connect:
         self.session.add(sending_data)
         self.session.commit()
 
+
+    def delete_found_users(self, main_user_id):
+        '''Удаление данных с таблицы FoundUsers данных пользователей (в том числе фото)
+        по main_user_id - id пользователя обратившегося в чат,
+        испоьзуется для изменения критериев'''
+        subq_main = Connect.session.query(Mainuser).filter(Mainuser.vk_id == main_user_id).first()
+        subq_people = Connect.session.query(Founduser).filter(Founduser.user_id == subq_main.user_id).all()
+        subq_photo_foundusers = Connect.session.query(Photo).filter(Photo.found_user_id == subq_people.found_user_id).all()
+
+        for photo in subq_photo_foundusers:
+            self.session.delete(photo)
+            self.session.commit()
+
+        for sub in subq_people:
+            self.session.delete(sub)
+            self.session.commit()
+
+
+Connect().delete_found_users(569486319)
+
+
 # sqr = ExtractingUserData()
 # location = sqr.extract_city_and_country(32870366)
 # city = location[1]
