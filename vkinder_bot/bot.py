@@ -106,12 +106,13 @@ def run_bot():
             request = event.text.lower()
 
             if request == "начать" or request == "привет" or request == "1":
-                try:
+                double_user_id = Connect.session.query(Mainuser).filter(Mainuser.vk_id == str(event.user_id)).first()
+                if not double_user_id:
                     main_user_vk = ExtractingUserData().profile_info(event.user_id)
                     Connect().user_database_entry(main_user_vk)
                     write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
-                except:
+                else:
                     '''Стартовое, основное меню для пользователя'''
                     write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
@@ -184,11 +185,19 @@ def run_bot():
                 if len(request) == 2:
                     age_from = int(request) - 3
                     age_to = int(request) + 3
-                    # TODO age_from возраст(-3) и age_to(+3), к ним добавить методы для поиска
 
-                    data_found_user = ExtractingUserData().user_search(count=9, age_from=age_from, age_to=age_to,
-                                                                       sex=user_sex)
-                    Connect().founduser_database_entry(data_found_user, event.user_id)
+                    found_double_id = Connect.session.query(Founduser).filter(Founduser.user_id == double_user_id.user_id).first()
+                    print(found_double_id)
+                    if found_double_id == None:
+                        City_user = ExtractingUserData().extract_city_and_country(event.user_id)
+                        print(City_user[1], City_user[0])
+                        data_found_user = ExtractingUserData().user_search(count=177, age_from=age_from, age_to=age_to,
+                                                                           sex=user_sex, city=City_user[1],
+                                                                           country=City_user[0])
+                        Connect().founduser_database_entry(data_found_user, event.user_id)
+                        write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
+                    else:
+                        write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
 
             if user_mode == 'search_people':
 

@@ -53,7 +53,7 @@ class Photo(Base):
     __tablename__ = "photo"
 
     photo_id = sq.Column(sq.Integer, primary_key=True)
-    link = sq.Column(sq.String(length=200), nullable=False)
+    link = sq.Column(sq.String(length=500), nullable=False)
     quantity_like = sq.Column(sq.Integer)
     media_id = sq.Column(sq.Integer)
     found_user_id = sq.Column(sq.Integer, sq.ForeignKey("founduser.found_user_id"), nullable=False)
