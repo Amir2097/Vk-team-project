@@ -2,6 +2,7 @@ import configparser
 import sqlalchemy as sq
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from vkinder_bot.extraction_data import ExtractingUserData
+import vkinder_bot
 
 Base = declarative_base()
 
@@ -68,16 +69,23 @@ def remove_tables(engine):
     Base.metadata.drop_all(engine)
 
 
+# config = configparser.ConfigParser()
+# config.read("vkinder_bot/config_bot.cfg")
+# DSN = "postgresql://*****:****@*****:5432/vkinder"
+# engine = sq.create_engine(DSN)
+# remove_tables(engine)
+# create_tables(engine)
+
+
 class Connect:
     """Подключение к бд и создание сессии"""
 
     config = configparser.ConfigParser()
-    config.read("vkinder_bot/config_bot.cfg")
+    config.read("config_bot.cfg")
     token_communities = config["TOKEN"]["vk_token"]
-
-    db_user = config.get('DATABASE', 'db_user')
-    db_password = config.get('DATABASE', 'db_password')
-    db_host = config.get('DATABASE', 'db_host')
+    db_user = config["DATABASE"]["db_user"]
+    db_password = config["DATABASE"]["db_password"]
+    db_host = config["DATABASE"]["db_host"]
 
     DSN = "postgresql://%s:%s@%s:5432/vkinder" % (db_user, db_password, db_host)
     engine = sq.create_engine(DSN)
@@ -143,25 +151,19 @@ class Connect:
         self.session.add(sending_data)
         self.session.commit()
 
-
     def delete_found_users(self, main_user_id):
         '''Удаление данных с таблицы FoundUsers данных пользователей (в том числе фото)
         по main_user_id - id пользователя обратившегося в чат,
         испоьзуется для изменения критериев'''
         subq_main = Connect.session.query(Mainuser).filter(Mainuser.vk_id == main_user_id).first()
         subq_people = Connect.session.query(Founduser).filter(Founduser.user_id == subq_main.user_id).all()
-        subq_photo_foundusers = Connect.session.query(Photo).filter(Photo.found_user_id == subq_people.found_user_id).all()
+        for subq_peoples in subq_people:
+            subq_photo_foundusers = Connect.session.query(Photo).filter(
+                Photo.found_user_id == subq_peoples.found_user_id).all()
+            for subq_photo_found in subq_photo_foundusers:
+                self.session.delete(subq_photo_found)
+                self.session.commit()
 
-        for photo in subq_photo_foundusers:
-            self.session.delete(photo)
-            self.session.commit()
-
-        for sub in subq_people:
-            self.session.delete(sub)
-            self.session.commit()
-
-
-Connect().delete_found_users(569486319)
 
 
 # sqr = ExtractingUserData()
