@@ -17,7 +17,6 @@ config.read("vkinder_bot/config_bot.cfg")
 tokenson = config["TOKEN"]["vk_token"]
 vk = vk_api.VkApi(token=tokenson)
 longpoll = VkLongPoll(vk)
-extr_name = ExtractingUserData()
 
 
 class sending_messages:
@@ -107,14 +106,16 @@ def run_bot():
 
             if request == "начать" or request == "привет" or request == "1":
                 double_user_id = Connect.session.query(Mainuser).filter(Mainuser.vk_id == str(event.user_id)).first()
+                user_name = ExtractingUserData().extract_name(event.user_id)
+                print(user_name)
                 if double_user_id == None:
                     main_user_vk = ExtractingUserData().profile_info(event.user_id)
                     Connect().user_database_entry(main_user_vk)
-                    write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
+                    write_msg(event.user_id, f"{user_name} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
                 else:
                     '''Стартовое, основное меню для пользователя'''
-                    write_msg(event.user_id, f"{event.user_id} привет! Прошу ознакомиться с меню:", start_keyboard)
+                    write_msg(event.user_id, f"{user_name} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
 
             if request == "критерии для поиска":
@@ -186,11 +187,13 @@ def run_bot():
                     age_from = int(request) - 3
                     age_to = int(request) + 3
                     try:
-                        found_double_id = Connect.session.query(Founduser).filter(Founduser.user_id == double_user_id.user_id).first()
+                        found_double_id = Connect.session.query(Founduser).filter(
+                            Founduser.user_id == double_user_id.user_id).first()
                     except AttributeError:
                         continue
                     if found_double_id == None:
-                        write_msg(event.user_id, f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
+                        write_msg(event.user_id,
+                                  f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(str(event.user_id))
                         data_found_user = ExtractingUserData().user_search(count=17, age_from=age_from, age_to=age_to,
                                                                            sex=user_sex, city=City_user[1],
@@ -201,7 +204,8 @@ def run_bot():
                         write_msg(event.user_id,
                                   f"Происходит обновление БД, ожидайте ответа о завершении:")
                         Connect().delete_found_users(str(event.user_id))
-                        write_msg(event.user_id, f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
+                        write_msg(event.user_id,
+                                  f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(event.user_id)
                         data_found_user = ExtractingUserData().user_search(count=17, age_from=age_from, age_to=age_to,
                                                                            sex=user_sex, city=City_user[1],

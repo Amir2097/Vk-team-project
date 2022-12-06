@@ -143,3 +143,10 @@ class ExtractingUserData:
             requests.get(url=f'https://api.vk.com/method/likes.delete', params=self.paramitres)
         except KeyError:
             return "Ошибка удаления объекта из списока 'Мне нравится' !!!!"
+
+    def extract_name(self, user_id):
+        self.user_id = user_id
+        self.paramitres = {'access_token': self.token, 'user_id': self.user_id, 'count': 5, 'v': 5.131}
+        request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
+        # print(request_generation.json()['response'][0]['first_name'])
+        return request_generation.json()['response'][0]['first_name']
