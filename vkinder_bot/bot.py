@@ -14,7 +14,8 @@ longpoll = VkLongPoll(vk)
 
 
 class sending_messages:
-    """Итератор для вывода данных сформированных в бд о найденных пользователях"""
+    """Итератор для вывода данных сформированных в бд о найденных пользователях,
+    принимает на вход: main_vk_id - vk_id (пользователя)"""
 
     def __init__(self, main_vk_id):
         self.main_vk_id = main_vk_id
@@ -88,13 +89,20 @@ sex_keyboard = get_keyboard([
 
 
 def run_bot():
+    '''Запуск бота'''
     global age_from, age_to, user_sex
 
     def write_msg(user_id, message, keyboard=None):
+        '''Метод обращения в чате к пользователю:
+        user_id - vk_id (пользователя);
+        message - сообщение пользователю;
+        keyboard - реализованные кнопки'''
+
         vk.method('messages.send',
                   {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), 'keyboard': keyboard})
 
     for event in longpoll.listen():
+        '''longpoll.listen() бот слушает команды в чате от пользователя'''
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             request = event.text.lower()
             name_vk_user = Connect().session.query(Mainuser).filter(
@@ -257,7 +265,6 @@ def run_bot():
 
                     else:
                         write_msg(event.user_id, "Пользователь уже в ЧС!")
-
 
                 if request == 'в избранное':
                     '''Добавляем страницу(id) в понравившийся список'''
