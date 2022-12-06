@@ -170,6 +170,7 @@ def run_bot():
                         Mainuser.vk_id == str(event.user_id)).first()
                     blocked_users = Connect.session.query(Blocked).filter(
                         Blocked.user_id == user_user_id.user_id).all()
+
                     if blocked_users == []:
                         write_msg(event.user_id, f'Список ЧС пуст!')
 
