@@ -29,7 +29,9 @@ def cprint_text(text):
 
 
 def startup():
-    """Функция запуска и первоначальной настройки программы"""
+    """
+    Функция запуска и первоначальной настройки программы
+    """
     global vk_session
 
     if os.path.exists(configpath):
