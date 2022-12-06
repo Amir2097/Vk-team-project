@@ -4,12 +4,6 @@ import vk_api, json
 from vk_api.longpoll import VkLongPoll, VkEventType
 import requests
 from Database.Session import Connect, Photo, Founduser, Mainuser, Blocked, Favorite
-import psycopg2
-import sqlalchemy
-# import sqlalchemy as sq
-# from sqlalchemy.orm import declarative_base, relationship
-# from Database.models import User, Favorite, Blocked, Photo, Founduser,
-from Database.Session import Connect
 from vkinder_bot.extraction_data import ExtractingUserData
 
 config = configparser.ConfigParser()
@@ -219,6 +213,7 @@ def run_bot():
                                                                            country=City_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
+
                     else:
                         write_msg(event.user_id,
                                   f"Происходит обновление БД, ожидайте ответа о завершении:")
@@ -231,6 +226,7 @@ def run_bot():
                                                                            country=City_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
+
 
             if user_mode == 'search_people':
 
@@ -258,8 +254,10 @@ def run_bot():
                         Connect().session.add(add_blocked_users)
                         Connect().session.commit()
                         write_msg(event.user_id, "Теперь данная страница находится в ЧС!")
+
                     else:
                         write_msg(event.user_id, "Пользователь уже в ЧС!")
+
 
                 if request == 'в избранное':
                     '''Добавляем страницу(id) в понравившийся список'''
@@ -270,5 +268,6 @@ def run_bot():
                         Connect().session.add(add_favorite_users)
                         Connect().session.commit()
                         write_msg(event.user_id, "Пользователь добавлен в избранное")
+
                     else:
                         write_msg(event.user_id, "Пользователь уже есть!")
