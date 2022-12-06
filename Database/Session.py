@@ -68,14 +68,6 @@ def remove_tables(engine):
     Base.metadata.drop_all(engine)
 
 
-# config = configparser.ConfigParser()
-# config.read("vkinder_bot/config_bot.cfg")
-# DSN = "postgresql://*****:****@*****:5432/vkinder"
-# engine = sq.create_engine(DSN)
-# remove_tables(engine)
-# create_tables(engine)
-
-
 class Connect:
     """Подключение к бд и создание сессии"""
 
@@ -120,9 +112,9 @@ class Connect:
                 self.session.add(new_post)
                 self.session.commit()
                 subq_photo = Connect.session.query(Founduser).filter(Founduser.vk_id == str(record.get('id'))).first()
-                for iter in ExtractingUserData().photo_extraction(str(record.get('id'))):
-                    new_post_photo = Photo(link=iter[0], quantity_like=iter[1][0],
-                                           media_id=iter[1][1], found_user_id=subq_photo.found_user_id)
+                for found_iter in ExtractingUserData().photo_extraction(str(record.get('id'))):
+                    new_post_photo = Photo(link=found_iter[0], quantity_like=found_iter[1][0],
+                                           media_id=found_iter[1][1], found_user_id=subq_photo.found_user_id)
                     self.session.add(new_post_photo)
                     self.session.commit()
 
@@ -151,9 +143,9 @@ class Connect:
         self.session.commit()
 
     def delete_found_users(self, main_user_id):
-        '''Удаление данных с таблицы FoundUsers данных пользователей (в том числе фото)
+        """Удаление данных с таблицы FoundUsers данных пользователей (в том числе фото)
         по main_user_id - id пользователя обратившегося в чат,
-        испоьзуется для изменения критериев'''
+        испоьзуется для изменения критериев"""
         subq_main = Connect.session.query(Mainuser).filter(Mainuser.vk_id == main_user_id).first()
         subq_people = Connect.session.query(Founduser).filter(Founduser.user_id == subq_main.user_id).all()
         for subq_peoples in subq_people:
@@ -164,15 +156,3 @@ class Connect:
                 self.session.commit()
             self.session.delete(subq_peoples)
             self.session.commit()
-
-
-
-
-# sqr = ExtractingUserData()
-# location = sqr.extract_city_and_country(32870366)
-# city = location[1]
-# country = location[0]
-# record = sqr.user_search(20, 25, 30, 1, city, country)
-# data = sqr.profile_info(32870366)
-# Connect().user_database_entry(data)
-# Connect().founduser_database_entry(record, 32870366)

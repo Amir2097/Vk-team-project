@@ -31,14 +31,11 @@ def cprint_text(text):
 def startup():
     """Функция запуска и первоначальной настройки программы"""
     global vk_session
+
     if os.path.exists(configpath):
         cprint_redtext("Бот запущен!")
         from vkinder_bot.bot import run_bot
         run_bot()
-        # try:
-        #     run_bot()
-        # except:
-        #     cprint_redtext(" !!!!!!!!!! Ошибка работы БОТА !!!!!!!!!! ")
     else:
         try:
             cprint_redtext("ПЕРВОНАЧАЛЬНАЯ НАСТРОЙКА ПРОГРАММЫ")
@@ -105,7 +102,9 @@ def startup():
                     config.write(config_file)
 
                 cprint_text("[INFO] Соединение с базой настроено! Конфигурация записана!")
+                cprint_text("[INFO] Начало установки модулей!")
                 os.system("pip install -r requirements.txt")
+                cprint_text("[FINISH] Настройка завершена! Перезапустите БОТ.")
 
             except psycopg2.OperationalError:
                 cprint_redtext("[ERROR] БАЗА ДАННЫХ НЕДОСТУПНА!!!!")

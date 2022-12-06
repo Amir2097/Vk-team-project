@@ -25,6 +25,7 @@ class ExtractingUserData:
 
     extract_name - метод извлечения имени пользователя по VK ID
     """
+
     def __init__(self):
         self.id_photo = None
         self.id_user = None
@@ -183,5 +184,4 @@ class ExtractingUserData:
         self.user_id = user_id
         self.paramitres = {'access_token': self.token, 'user_id': self.user_id, 'count': 5, 'v': 5.131}
         request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)
-        # print(request_generation.json()['response'][0]['first_name'])
         return request_generation.json()['response'][0]['first_name']
