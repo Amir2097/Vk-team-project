@@ -1,4 +1,4 @@
-from datetime import time
+import time
 from random import randrange
 import configparser
 import vk_api, json
