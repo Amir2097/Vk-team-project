@@ -3,7 +3,7 @@ import configparser
 import vk_api, json
 from vk_api.longpoll import VkLongPoll, VkEventType
 import requests
-from Database.Session import Connect, Photo, Founduser, Mainuser
+from Database.Session import Connect, Photo, Founduser, Mainuser, Blocked, Favorite
 import psycopg2
 import sqlalchemy
 # import sqlalchemy as sq
@@ -103,19 +103,20 @@ def run_bot():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             request = event.text.lower()
+            name_vk_user = Connect().session.query(Mainuser).filter(
+                Mainuser.vk_id == str(event.user_id)).first()
 
             if request == "начать" or request == "привет" or request == "1":
                 double_user_id = Connect.session.query(Mainuser).filter(Mainuser.vk_id == str(event.user_id)).first()
-                user_name = ExtractingUserData().extract_name(event.user_id)
-                print(user_name)
+
                 if double_user_id == None:
                     main_user_vk = ExtractingUserData().profile_info(event.user_id)
                     Connect().user_database_entry(main_user_vk)
-                    write_msg(event.user_id, f"{user_name} привет! Прошу ознакомиться с меню:", start_keyboard)
+                    write_msg(event.user_id, f"{name_vk_user.name} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
                 else:
                     '''Стартовое, основное меню для пользователя'''
-                    write_msg(event.user_id, f"{user_name} привет! Прошу ознакомиться с меню:", start_keyboard)
+                    write_msg(event.user_id, f"{name_vk_user.name} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
 
             if request == "критерии для поиска":
@@ -131,7 +132,7 @@ def run_bot():
 
             if request == "назад":
                 '''Переход в основное, стартовое меню'''
-                write_msg(event.user_id, f"{event.user_id} вы перешли назад", start_keyboard)
+                write_msg(event.user_id, f"{name_vk_user.name} вы перешли назад", start_keyboard)
                 user_mode = 'start'
 
             if user_mode == 'start':
@@ -150,37 +151,53 @@ def run_bot():
                 if request == "избранные":
                     '''Выведение списка избранных пользователей'''
                     write_msg(event.user_id, f"Ваш список избранных:", start_keyboard)
-                    # TODO обращение к базе
+                    user_user_id = Connect.session.query(Mainuser).filter(
+                        Mainuser.vk_id == str(event.user_id)).first()
+                    favorite_users = Connect.session.query(Favorite).filter(
+                        Favorite.user_id == user_user_id.user_id).all()
+
+                    if favorite_users == []:
+                        write_msg(event.user_id, f'Список избранных пуст!')
+
+                    else:
+                        for favorites in favorite_users:
+                            write_msg(event.user_id, f'https://vk.com/id{favorites.vk_id}')
 
                 if request == "черный список":
                     '''Выведение списка ЧС пользователей'''
                     write_msg(event.user_id, f"Ваш список ЧС:", start_keyboard)
-                    # TODO обращение к базе
+                    user_user_id = Connect.session.query(Mainuser).filter(
+                        Mainuser.vk_id == str(event.user_id)).first()
+                    blocked_users = Connect.session.query(Blocked).filter(
+                        Blocked.user_id == user_user_id.user_id).all()
+                    if blocked_users == []:
+                        write_msg(event.user_id, f'Список ЧС пуст!')
 
-                # if request == "добавить токен":
-                #     '''Запрос на добавление токена от пользователя в чат'''
-                #     # TODO: Запрос на получение токена
-                #     link_user = ''
-                #     write_msg(event.user_id, f"Получить токен вк для поиска можете по ссылке:", start_keyboard)
-                #     write_msg(event.user_id, link_user, start_keyboard)
-                #
+                    else:
+                        for blockeds in blocked_users:
+                            write_msg(event.user_id, f'https://vk.com/id{blockeds.vk_id}')
+
+
+                if request == "добавить токен":
+                    '''Запрос на добавление токена от пользователя в чат'''
+                    write_msg(event.user_id, f"Данная функция в реализации", start_keyboard)
+
                 # if 'vk1.a' in request:
                 #     'Получение токена от пользователя'
                 #     print(request)
-                #     # TODO добавить метод доавления токена в базу данных
 
             if user_mode == 'info_search_people':
 
                 if request == "мужчина":
                     '''Выбор пола, если мужчина, то в список добавляется 2'''
                     user_sex = 2
-                    write_msg(event.user_id, f"{event.user_id} Напишите возраст:")
+                    write_msg(event.user_id, f"{name_vk_user.name} напишите возраст:")
                 '''Добавление возраста в словарь под ключом: age'''
 
                 if request == "девушка":
                     '''Если девушка, то в список добавляется 1'''
                     user_sex = 1
-                    write_msg(event.user_id, f"{event.user_id} Напишите возраст:")
+                    write_msg(event.user_id, f"{name_vk_user.name} напишите возраст:")
                 '''Добавление возраста в словарь под ключом: age'''
 
                 if len(request) == 2:
@@ -191,6 +208,7 @@ def run_bot():
                             Founduser.user_id == double_user_id.user_id).first()
                     except AttributeError:
                         continue
+
                     if found_double_id == None:
                         write_msg(event.user_id,
                                   f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
@@ -207,7 +225,7 @@ def run_bot():
                         write_msg(event.user_id,
                                   f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(event.user_id)
-                        data_found_user = ExtractingUserData().user_search(count=17, age_from=age_from, age_to=age_to,
+                        data_found_user = ExtractingUserData().user_search(count=37, age_from=age_from, age_to=age_to,
                                                                            sex=user_sex, city=City_user[1],
                                                                            country=City_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
@@ -216,31 +234,40 @@ def run_bot():
             if user_mode == 'search_people':
 
                 if request == 'поставить лайк':
-                    '''Поставить лайк на определенное фото пользователя'''
-                    # TODO: Здесь как то реализовать метод поставки лайк на фото
-                    '''Автоматически добавляем пользователя в избранное, таким же методом что и при добавке в избранное'''
-                    # TODO: like_me_list.append(search_users_id???)
+                    '''Поставить лайк на первое(главное) фото пользователя'''
+                    ExtractingUserData().like(iterator_start.value_list.vk_id, iterator_start.query_photo[0].media_id)
+                    write_msg(event.user_id, f"Вы лайкнули фото!")
 
                 if request == 'убрать лайк':
-                    '''Убирает лайк с фото пользователя и убирает пользователя из списка Избранное'''
-                    ExtractingUserData().like()
-                    '''Убираем пользователя со списка Избранное'''
-                    # TODO: like_me_list.remove(search_users_id???)
+                    '''Убирает лайк с фото пользователя'''
+                    ExtractingUserData().dislike(iterator_start.value_list.vk_id,
+                                                 iterator_start.query_photo[0].media_id)
+                    write_msg(event.user_id, f"Вы убрали лайк с фото!")
 
                 if request == 'поиск':
                     '''поиск людей через глобальный поиск'''
                     write_msg(event.user_id, next(iterator_start))
 
-                    # TODO: Сюда мы напишем метод по поискую людей и будем выдавать их пользователю
-
                 if request == 'в чс':
                     '''Добавляем страницу(id) в ЧС'''
-                    write_msg(event.user_id, "Теперь данная страница находится в ЧС!")
-
-                    # TODO: В список будет добавляться id пользователя, либо можно ссылку пользователя
-                    # TODO: black_list.append(search_users_id????)
+                    if Connect.session.query(Blocked.vk_id).filter(
+                            Blocked.vk_id == iterator_start.value_list.vk_id).first() == None:
+                        add_blocked_users = Blocked(vk_id=iterator_start.value_list.vk_id,
+                                                    user_id=iterator_start.value_list.user_id)
+                        Connect().session.add(add_blocked_users)
+                        Connect().session.commit()
+                        write_msg(event.user_id, "Теперь данная страница находится в ЧС!")
+                    else:
+                        write_msg(event.user_id, "Пользователь уже в ЧС!")
 
                 if request == 'в избранное':
                     '''Добавляем страницу(id) в понравившийся список'''
-                    write_msg(event.user_id, "Пользователь добавлен в избранное")
-                    # TODO: Здесь абсолютно таже схема, что и с ЧС, только список избран
+                    if Connect.session.query(Favorite.vk_id).filter(
+                            Favorite.vk_id == iterator_start.value_list.vk_id).first() == None:
+                        add_favorite_users = Favorite(vk_id=iterator_start.value_list.vk_id,
+                                                      user_id=iterator_start.value_list.user_id)
+                        Connect().session.add(add_favorite_users)
+                        Connect().session.commit()
+                        write_msg(event.user_id, "Пользователь добавлен в избранное")
+                    else:
+                        write_msg(event.user_id, "Пользователь уже есть!")
