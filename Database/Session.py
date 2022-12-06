@@ -2,7 +2,6 @@ import configparser
 import sqlalchemy as sq
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from vkinder_bot.extraction_data import ExtractingUserData
-import vkinder_bot
 
 Base = declarative_base()
 
