@@ -14,9 +14,10 @@ longpoll = VkLongPoll(vk)
 
 
 class sending_messages:
-    """Итератор для вывода данных сформированных в бд о найденных пользователях,
-    принимает на вход: main_vk_id - vk_id (пользователя)"""
-
+    """
+    Итератор для вывода данных сформированных в бд о найденных пользователях,
+    принимает на вход: main_vk_id - vk_id (пользователя)
+    """
     def __init__(self, main_vk_id):
         self.main_vk_id = main_vk_id
         self.token_communities = config["TOKEN"]["vk_token"]
