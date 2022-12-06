@@ -1,4 +1,3 @@
-import time
 from random import randrange
 import configparser
 import vk_api, json
@@ -89,27 +88,6 @@ sex_keyboard = get_keyboard([
 
 
 def run_bot():
-    second_time = 0
-    minut_time = 0
-    hour_time = 0
-    count_day = 0
-    while True:
-        time.sleep(1)
-        second_time += 1
-        if second_time == 60:
-            second_time = 0
-            minut_time += 1
-            if minut_time == 60:
-                minut_time = 0
-                hour_time += 1
-                if hour_time == 24:
-                    hour_time = 0
-                    count_day += 1
-
-        print(
-            f"\rВремя работы БОТА: Дни - {count_day} Часы - {hour_time} Минуты - {minut_time} Секунды - {second_time}",
-            end='')
-
     global age_from, age_to, user_sex
 
     def write_msg(user_id, message, keyboard=None):
