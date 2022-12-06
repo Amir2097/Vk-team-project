@@ -98,10 +98,8 @@ class ExtractingUserData:
     def profile_info(self, main_vkid):
 
         """
-        Метод возвращающий информацию о текущем профиле
-
-        Метод принмает vk id пользователя использующего бота
-
+        Метод возвращающий информацию о текущем профиле.
+        Метод принмает vk id пользователя использующего бота.
         """
         self.main_vkid = main_vkid
         self.paramitres = {'access_token': self.token, 'user_ids': self.main_vkid, 'fields': 'bdate', 'v': 5.131}
