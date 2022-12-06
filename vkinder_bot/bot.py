@@ -45,10 +45,10 @@ class sending_messages:
 
 
 def get_keyboard(buts):
-    '''
+    """
     Функция для создания кнопок в меню чата, имеет 3 основных цвета:
     зеленый - positive, красный - negative, синий - primary
-    '''
+    """
     nb = []
     color = ''
     for i in range(len(buts)):
@@ -89,20 +89,26 @@ sex_keyboard = get_keyboard([
 
 
 def run_bot():
-    '''Запуск бота'''
+    """
+    Запуск бота
+    """
     global age_from, age_to, user_sex
 
     def write_msg(user_id, message, keyboard=None):
-        '''Метод обращения в чате к пользователю:
+        """
+        Метод обращения в чате к пользователю:
         user_id - vk_id (пользователя);
         message - сообщение пользователю;
-        keyboard - реализованные кнопки'''
+        keyboard - реализованные кнопки
+        """
 
         vk.method('messages.send',
                   {'user_id': user_id, 'message': message, 'random_id': randrange(10 ** 7), 'keyboard': keyboard})
 
     for event in longpoll.listen():
-        '''longpoll.listen() бот слушает команды в чате от пользователя'''
+        """
+        longpoll.listen() бот слушает команды в чате от пользователя
+        """
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             request = event.text.lower()
             name_vk_user = Connect().session.query(Mainuser).filter(
@@ -117,30 +123,40 @@ def run_bot():
                     write_msg(event.user_id, f"{name_vk_user.name} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
                 else:
-                    '''Стартовое, основное меню для пользователя'''
+                    """
+                    Стартовое, основное меню для пользователя
+                    """
                     write_msg(event.user_id, f"{name_vk_user.name} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
 
             if request == "критерии для поиска":
-                '''Переход в меню для фильтрации данных пользователя'''
+                """
+                Переход в меню для фильтрации данных пользователя
+                """
                 write_msg(event.user_id, "Собеседника какого пола вы ищете?", sex_keyboard)
                 user_mode = 'info_search_people'
 
             if request == "поиск людей":
-                '''Переход пользователя на следующее меню для поиска партнеров'''
+                """
+                Переход пользователя на следующее меню для поиска партнеров
+                """
                 write_msg(event.user_id, "Управляйте кнопками и просматривайте варианты!", process_keyboard)
                 user_mode = 'search_people'
                 iterator_start = sending_messages(event.user_id)
 
             if request == "назад":
-                '''Переход в основное, стартовое меню'''
+                """
+                Переход в основное, стартовое меню
+                """
                 write_msg(event.user_id, f"{name_vk_user.name} вы перешли назад", start_keyboard)
                 user_mode = 'start'
 
             if user_mode == 'start':
 
                 if request == "что умеет делать бот":
-                    '''Описание функциоанала бота'''
+                    """
+                    Описание функциоанала бота
+                    """
                     write_msg(event.user_id, "Бот способен на многое!\n Главная его функция, это сближать людей!\n"
                                              "Ничего сложного нету, полагайтесь на кнопки в меню чата!\n"
                                              "Поиск людей производится по 3-ем критериям:\n"
@@ -151,7 +167,9 @@ def run_bot():
                                              "Удачного пользования, надеемся мы вам поможем &#128107;", start_keyboard)
 
                 if request == "избранные":
-                    '''Выведение списка избранных пользователей'''
+                    """
+                    Выведение списка избранных пользователей
+                    """
                     write_msg(event.user_id, f"Ваш список избранных:", start_keyboard)
                     user_user_id = Connect.session.query(Mainuser).filter(
                         Mainuser.vk_id == str(event.user_id)).first()
@@ -166,7 +184,9 @@ def run_bot():
                             write_msg(event.user_id, f'https://vk.com/id{favorites.vk_id}')
 
                 if request == "черный список":
-                    '''Выведение списка ЧС пользователей'''
+                    """
+                    Выведение списка ЧС пользователей
+                    """
                     write_msg(event.user_id, f"Ваш список ЧС:", start_keyboard)
                     user_user_id = Connect.session.query(Mainuser).filter(
                         Mainuser.vk_id == str(event.user_id)).first()
@@ -180,28 +200,27 @@ def run_bot():
                         for blockeds in blocked_users:
                             write_msg(event.user_id, f'https://vk.com/id{blockeds.vk_id}')
 
-
                 if request == "добавить токен":
-                    '''Запрос на добавление токена от пользователя в чат'''
+                    """
+                    Запрос на добавление токена от пользователя в чат
+                    """
                     write_msg(event.user_id, f"Данная функция в реализации", start_keyboard)
-
-                # if 'vk1.a' in request:
-                #     'Получение токена от пользователя'
-                #     print(request)
 
             if user_mode == 'info_search_people':
 
                 if request == "мужчина":
-                    '''Выбор пола, если мужчина, то в список добавляется 2'''
+                    """
+                    Выбор пола, если мужчина, то в список добавляется 2
+                    """
                     user_sex = 2
                     write_msg(event.user_id, f"{name_vk_user.name} напишите возраст:")
-                '''Добавление возраста в словарь под ключом: age'''
 
                 if request == "девушка":
-                    '''Если девушка, то в список добавляется 1'''
+                    """
+                    Если девушка, то в список добавляется 1
+                    """
                     user_sex = 1
                     write_msg(event.user_id, f"{name_vk_user.name} напишите возраст:")
-                '''Добавление возраста в словарь под ключом: age'''
 
                 if len(request) == 2:
                     age_from = int(request) - 3
@@ -235,28 +254,35 @@ def run_bot():
                         Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
 
-
             if user_mode == 'search_people':
 
                 if request == 'поставить лайк':
-                    '''Поставить лайк на первое(главное) фото пользователя'''
+                    """
+                    Поставить лайк на первое(главное) фото пользователя
+                    """
                     ExtractingUserData().like(iterator_start.value_list.vk_id, iterator_start.query_photo[0].media_id)
                     write_msg(event.user_id, f"Вы лайкнули фото!")
 
                 if request == 'убрать лайк':
-                    '''Убирает лайк с фото пользователя'''
+                    """
+                    Убирает лайк с фото пользователя
+                    """
                     ExtractingUserData().dislike(iterator_start.value_list.vk_id,
                                                  iterator_start.query_photo[0].media_id)
                     write_msg(event.user_id, f"Вы убрали лайк с фото!")
 
                 if request == 'поиск':
-                    '''поиск людей через глобальный поиск'''
+                    """
+                    поиск людей через глобальный поиск
+                    """
                     write_msg(event.user_id, next(iterator_start))
 
                 if request == 'в чс':
-                    '''Добавляем страницу(id) в ЧС'''
+                    """
+                    Добавляем страницу(id) в ЧС
+                    """
                     if Connect.session.query(Blocked.vk_id).filter(
-                            Blocked.vk_id == iterator_start.value_list.vk_id).first() == None:
+                            Blocked.vk_id == iterator_start.value_list.vk_id).first() is None:
                         add_blocked_users = Blocked(vk_id=iterator_start.value_list.vk_id,
                                                     user_id=iterator_start.value_list.user_id)
                         Connect().session.add(add_blocked_users)
@@ -267,9 +293,11 @@ def run_bot():
                         write_msg(event.user_id, "Пользователь уже в ЧС!")
 
                 if request == 'в избранное':
-                    '''Добавляем страницу(id) в понравившийся список'''
+                    """
+                    Добавляем страницу(id) в понравившийся список
+                    """
                     if Connect.session.query(Favorite.vk_id).filter(
-                            Favorite.vk_id == iterator_start.value_list.vk_id).first() == None:
+                            Favorite.vk_id == iterator_start.value_list.vk_id).first() is None:
                         add_favorite_users = Favorite(vk_id=iterator_start.value_list.vk_id,
                                                       user_id=iterator_start.value_list.user_id)
                         Connect().session.add(add_favorite_users)
