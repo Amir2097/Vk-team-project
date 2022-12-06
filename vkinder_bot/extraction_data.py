@@ -1,6 +1,5 @@
-import configparser
 import requests
-import vk_api
+import configparser
 from operator import itemgetter
 
 config = configparser.ConfigParser()
@@ -8,6 +7,24 @@ config.read("vkinder_bot/config_bot.cfg")
 
 
 class ExtractingUserData:
+    """
+    Класс с основными методами извлечения информации для БОТА.
+
+
+    user_search - метод поиска пользователей
+
+    photo_extraction - метод извлечения фотографий из профиля пользователя
+
+    extract_city_and_country - метод извлечения идентификатора страны и города пользователя
+
+    profile_info - метод извлечения информации из профиля пользователя
+
+    like - метод для добавления отметки "Мне нравится" на фотографию пользователя
+
+    dislike - метод для удаления отметки "Мне нравится" с фотографии пользователя
+
+    extract_name - метод извлечения имени пользователя по VK ID
+    """
     def __init__(self):
         self.id_photo = None
         self.id_user = None
@@ -28,12 +45,18 @@ class ExtractingUserData:
         """
         Метод поиска пользователей сайта VK по заданным параметрам, получает на вход параметры:
 
+
         count - количество найденых записей (не более 999)
+
         age_from - от какого возраста искать
         age_to - до какого возраста искать
+
         sex - пол (2 мужчина, 1 женщина)
+
         city - идентификаттор города (берется у пользователя который ведет диалог с ботом)
+
         country - идентификатор страны (берется у пользователя который ведет диалог с ботом)
+
 
         Поиск ведется ТОЛЬКО по страницам пользователей у которых установлен смейный статус "В активном поиске"
 
@@ -111,8 +134,12 @@ class ExtractingUserData:
     def like(self, id_user, id_photo):
         """
         Метод добавляет указанный объект в список 'Мне нравится' (Like) текущего пользователя, принимает на вход:
+
+
         id_user - Идентификатор владельца объекта
+
         id_photo - Идентификатор объекта
+
 
         https://dev.vk.com/method/likes.add
         """
@@ -129,8 +156,12 @@ class ExtractingUserData:
     def dislike(self, id_user, id_photo):
         """
         Метод удаляет указанный объект из списка 'Мне нравится' (Like) текущего пользователя, принимает на вход:
+
+
         id_user - Идентификатор владельца объекта
+
         id_photo - Идентификатор объекта
+
 
         https://dev.vk.com/method/likes.delete
         """
@@ -145,6 +176,11 @@ class ExtractingUserData:
             return "Ошибка удаления объекта из списока 'Мне нравится' !!!!"
 
     def extract_name(self, user_id):
+        """
+               Метод выводит имя по ID текущего пользователя, принимает на вход:
+
+               user_id - VK ID пользователя имя которого необходимо вывести
+        """
         self.user_id = user_id
         self.paramitres = {'access_token': self.token, 'user_id': self.user_id, 'count': 5, 'v': 5.131}
         request_generation = requests.get(url=f'https://api.vk.com/method/users.get', params=self.paramitres)

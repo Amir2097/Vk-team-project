@@ -1,8 +1,8 @@
 import os
 import vk_api
+import pwinput
 import psycopg2
 import configparser
-import sqlalchemy
 
 config = configparser.ConfigParser()
 configpath = "vkinder_bot/config_bot.cfg"
@@ -30,6 +30,7 @@ def cprint_text(text):
 
 def startup():
     """Функция запуска и первоначальной настройки программы"""
+    global vk_session
     if os.path.exists(configpath):
         cprint_redtext("Бот запущен!")
         from vkinder_bot.bot import run_bot
@@ -52,11 +53,11 @@ def startup():
             cprint_redtext("+" * 34)
             cprint_redtext("Настройка взаимодействия с ВКонтакте \n")
             config.add_section("TOKEN")
-            add_token = input("[SET]Введите токен сообщества в котором будет работать БОТ - ")
+            add_token = pwinput.pwinput(prompt='[SET]Введите токен сообщества в котором будет работать БОТ- ', mask='*')
             config.set("TOKEN", "vk_token", add_token)
             add_user = input("[SET]Введите имя пользователя VK.COM (от его имени будут работать некоторые запросы)- ")
             config.set("TOKEN", "vk_user", add_user)
-            add_pass = input("[SET]Введите пароль VK.COM - ")
+            add_pass = pwinput.pwinput(prompt='[SET]Введите пароль от VK.COM- ', mask='*')
             config.set("TOKEN", "vk_pass", add_pass)
 
             try:
@@ -66,6 +67,8 @@ def startup():
                 password = config["TOKEN"]["vk_pass"]
                 scope = 'users,notify,friends,photos,offline,wall'
                 vk_session = vk_api.VkApi(username, password, scope=scope, api_version='5.124')
+            except TypeError:
+                cprint_redtext("ВВЕДЕН НЕКОРРЕКТНЫЙ ТОКЕН!!!")
             try:
                 vk_session.auth(token_only=True)
             except vk_api.AuthError as error_msg:
@@ -81,11 +84,11 @@ def startup():
 
             cprint_redtext("Настройка взаимодействия с базой данных")
             config.add_section("DATABASE")
-            user_data = input("[SET] Введите имя пользователя базы данных - ")
+            user_data = input("[SET] Введите имя пользователя базы данных- ")
             config.set("DATABASE", "db_user", user_data)
-            password_data = input("[SET] Введите пароль пользователя базы данных - ")
+            password_data = pwinput.pwinput(prompt='[SET] Введите пароль пользователя базы данных- ', mask='*')
             config.set("DATABASE", "db_password", password_data)
-            host_data = input("[SET] Введите хост базы данных - ")
+            host_data = input("[SET] Введите хост базы данных- ")
             config.set("DATABASE", "db_host", host_data)
 
             try:
