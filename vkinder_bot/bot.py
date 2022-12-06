@@ -208,7 +208,7 @@ def run_bot():
                         write_msg(event.user_id,
                                   f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(str(event.user_id))
-                        data_found_user = ExtractingUserData().user_search(count=17, age_from=age_from, age_to=age_to,
+                        data_found_user = ExtractingUserData().user_search(count=107, age_from=age_from, age_to=age_to,
                                                                            sex=user_sex, city=City_user[1],
                                                                            country=City_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
@@ -221,7 +221,7 @@ def run_bot():
                         write_msg(event.user_id,
                                   f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
                         City_user = ExtractingUserData().extract_city_and_country(event.user_id)
-                        data_found_user = ExtractingUserData().user_search(count=37, age_from=age_from, age_to=age_to,
+                        data_found_user = ExtractingUserData().user_search(count=107, age_from=age_from, age_to=age_to,
                                                                            sex=user_sex, city=City_user[1],
                                                                            country=City_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
