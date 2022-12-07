@@ -17,7 +17,6 @@ class ExtractingUserData:
     dislike - метод для удаления отметки "Мне нравится" с фотографии пользователя;
     extract_name - метод извлечения имени пользователя по VK ID.
     """
-
     def __init__(self):
         self.id_photo = None
         self.id_user = None
@@ -96,7 +95,6 @@ class ExtractingUserData:
             return "Страница пользователя закрыта настройками приватности!"
 
     def profile_info(self, main_vkid):
-
         """
         Метод возвращающий информацию о текущем профиле.
         Метод принмает vk id пользователя использующего бота.
@@ -132,7 +130,6 @@ class ExtractingUserData:
 
         https://dev.vk.com/method/likes.delete
         """
-
         try:
             self.id_user = id_user
             self.id_photo = id_photo
