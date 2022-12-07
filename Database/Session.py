@@ -28,7 +28,6 @@ class Favorite(Base):
     """
     Таблица избранных профилей
     """
-
     __tablename__ = "favorite"
 
     favorite_id = sq.Column(sq.Integer, primary_key=True)
