@@ -69,16 +69,15 @@ def startup():
             config.add_section("TOKEN")
             add_token = pwinput.pwinput(prompt='[SET]Введите токен сообщества в котором будет работать БОТ- ', mask='*')
             config.set("TOKEN", "vk_token", add_token)
-            add_user = input("[SET]Введите имя пользователя VK.COM (от его имени будут работать некоторые запросы)- ")
-            config.set("TOKEN", "vk_user", add_user)
-            add_pass = pwinput.pwinput(prompt='[SET]Введите пароль от VK.COM- ', mask='*')
-            config.set("TOKEN", "vk_pass", add_pass)
+            cprint_text("Авторизация на сайта Вконтакте для работы с api_vk")
+            add_user = input("[SET]Введите имя пользователя Вконтакте - ")
+            add_pass = pwinput.pwinput(prompt='[SET]Введите пароль Вконтакте - ', mask='*')
 
             try:
                 vk_session = vk_api.VkApi(token=config["TOKEN"]["vk_user_token"])
             except KeyError:
-                username = config["TOKEN"]["vk_user"]
-                password = config["TOKEN"]["vk_pass"]
+                username = add_user
+                password = add_pass
                 scope = 'users,notify,friends,photos,offline,wall'
                 vk_session = vk_api.VkApi(username, password, scope=scope, api_version='5.124')
             except TypeError:
