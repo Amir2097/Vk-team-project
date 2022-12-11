@@ -18,6 +18,7 @@ class sending_messages:
     Итератор для вывода данных сформированных в бд о найденных пользователях,
     принимает на вход: main_vk_id - vk_id (пользователя)
     """
+
     def __init__(self, main_vk_id):
         self.main_vk_id = main_vk_id
         self.token_communities = config["TOKEN"]["vk_token"]
@@ -99,7 +100,7 @@ def run_bot():
     """
     Запуск бота
     """
-    global age_from, age_to, user_sex
+    global age_from, age_to, user_sex, double_user_id, iterator_start, user_mode
 
     def write_msg(user_id, message, keyboard=None):
         """
@@ -118,22 +119,20 @@ def run_bot():
         """
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             request = event.text.lower()
-            name_vk_user = Connect().session.query(Mainuser).filter(
-                Mainuser.vk_id == str(event.user_id)).first()
-
+            name_vk_user = ExtractingUserData().extract_name(event.user_id)
             if request == "начать" or request == "привет" or request == "1":
                 double_user_id = Connect.session.query(Mainuser).filter(Mainuser.vk_id == str(event.user_id)).first()
-
-                if double_user_id == None:
+                if double_user_id is None:
                     main_user_vk = ExtractingUserData().profile_info(event.user_id)
                     Connect().user_database_entry(main_user_vk)
-                    write_msg(event.user_id, f"{name_vk_user.name} привет! Прошу ознакомиться с меню:", start_keyboard)
+                    write_msg(event.user_id, f"{ExtractingUserData.extract_name(event.user_id)} привет! Прошу "
+                                             f"ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
                 else:
                     """
                     Стартовое, основное меню для пользователя
                     """
-                    write_msg(event.user_id, f"{name_vk_user.name} привет! Прошу ознакомиться с меню:", start_keyboard)
+                    write_msg(event.user_id, f"{name_vk_user} привет! Прошу ознакомиться с меню:", start_keyboard)
                     user_mode = 'start'
 
             if request == "критерии для поиска":
@@ -183,7 +182,7 @@ def run_bot():
                     favorite_users = Connect.session.query(Favorite).filter(
                         Favorite.user_id == user_user_id.user_id).all()
 
-                    if favorite_users == []:
+                    if not favorite_users:
                         write_msg(event.user_id, f'Список избранных пуст!')
 
                     else:
@@ -200,7 +199,7 @@ def run_bot():
                     blocked_users = Connect.session.query(Blocked).filter(
                         Blocked.user_id == user_user_id.user_id).all()
 
-                    if blocked_users == []:
+                    if not blocked_users:
                         write_msg(event.user_id, f'Список ЧС пуст!')
 
                     else:
@@ -216,16 +215,10 @@ def run_bot():
             if user_mode == 'info_search_people':
 
                 if request == "мужчина":
-                    """
-                    Выбор пола, если мужчина, то в список добавляется 2
-                    """
                     user_sex = 2
                     write_msg(event.user_id, f"{name_vk_user.name} напишите возраст:")
 
                 if request == "девушка":
-                    """
-                    Если девушка, то в список добавляется 1
-                    """
                     user_sex = 1
                     write_msg(event.user_id, f"{name_vk_user.name} напишите возраст:")
 
@@ -238,13 +231,13 @@ def run_bot():
                     except AttributeError:
                         continue
 
-                    if found_double_id == None:
+                    if found_double_id is None:
                         write_msg(event.user_id,
                                   f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
-                        City_user = ExtractingUserData().extract_city_and_country(str(event.user_id))
+                        city_user = ExtractingUserData().extract_city_and_country(str(event.user_id))
                         data_found_user = ExtractingUserData().user_search(count=107, age_from=age_from, age_to=age_to,
-                                                                           sex=user_sex, city=City_user[1],
-                                                                           country=City_user[0])
+                                                                           sex=user_sex, city=city_user[1],
+                                                                           country=city_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
 
@@ -254,10 +247,10 @@ def run_bot():
                         Connect().delete_found_users(str(event.user_id))
                         write_msg(event.user_id,
                                   f"Происходит добавление людей в базу данных, ожидайте ответа о завершении:")
-                        City_user = ExtractingUserData().extract_city_and_country(event.user_id)
+                        city_user = ExtractingUserData().extract_city_and_country(event.user_id)
                         data_found_user = ExtractingUserData().user_search(count=107, age_from=age_from, age_to=age_to,
-                                                                           sex=user_sex, city=City_user[1],
-                                                                           country=City_user[0])
+                                                                           sex=user_sex, city=city_user[1],
+                                                                           country=city_user[0])
                         Connect().founduser_database_entry(data_found_user, event.user_id)
                         write_msg(event.user_id, f"Рекомендации найдены, перейдите в поиск:", start_keyboard)
 
